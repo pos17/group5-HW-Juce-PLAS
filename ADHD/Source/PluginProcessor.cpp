@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-DisPlasAudioProcessor::DisPlasAudioProcessor()
+ADHDAudioProcessor::ADHDAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -24,17 +24,17 @@ DisPlasAudioProcessor::DisPlasAudioProcessor()
 {
 }
 
-DisPlasAudioProcessor::~DisPlasAudioProcessor()
+ADHDAudioProcessor::~ADHDAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String DisPlasAudioProcessor::getName() const
+const juce::String ADHDAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool DisPlasAudioProcessor::acceptsMidi() const
+bool ADHDAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -43,7 +43,7 @@ bool DisPlasAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool DisPlasAudioProcessor::producesMidi() const
+bool ADHDAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -52,7 +52,7 @@ bool DisPlasAudioProcessor::producesMidi() const
    #endif
 }
 
-bool DisPlasAudioProcessor::isMidiEffect() const
+bool ADHDAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -61,50 +61,50 @@ bool DisPlasAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double DisPlasAudioProcessor::getTailLengthSeconds() const
+double ADHDAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int DisPlasAudioProcessor::getNumPrograms()
+int ADHDAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int DisPlasAudioProcessor::getCurrentProgram()
+int ADHDAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void DisPlasAudioProcessor::setCurrentProgram (int index)
+void ADHDAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String DisPlasAudioProcessor::getProgramName (int index)
+const juce::String ADHDAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void DisPlasAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ADHDAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void DisPlasAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
-void DisPlasAudioProcessor::releaseResources()
+void ADHDAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool DisPlasAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool ADHDAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -112,6 +112,8 @@ bool DisPlasAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
   #else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
+    // Some plugin hosts, such as certain GarageBand versions, will only
+    // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
@@ -127,7 +129,7 @@ bool DisPlasAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 }
 #endif
 
-void DisPlasAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ADHDAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -157,25 +159,25 @@ void DisPlasAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 }
 
 //==============================================================================
-bool DisPlasAudioProcessor::hasEditor() const
+bool ADHDAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* DisPlasAudioProcessor::createEditor()
+juce::AudioProcessorEditor* ADHDAudioProcessor::createEditor()
 {
-    return new DisPlasAudioProcessorEditor (*this);
+    return new ADHDAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void DisPlasAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void ADHDAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void DisPlasAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void ADHDAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -185,5 +187,5 @@ void DisPlasAudioProcessor::setStateInformation (const void* data, int sizeInByt
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new DisPlasAudioProcessor();
+    return new ADHDAudioProcessor();
 }

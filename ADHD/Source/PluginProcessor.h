@@ -13,12 +13,12 @@
 //==============================================================================
 /**
 */
-class DisPlasAudioProcessor  : public juce::AudioProcessor
+class ADHDAudioProcessor  : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    DisPlasAudioProcessor();
-    ~DisPlasAudioProcessor() override;
+    ADHDAudioProcessor();
+    ~ADHDAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -55,5 +55,5 @@ public:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DisPlasAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
 };
