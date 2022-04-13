@@ -129,6 +129,12 @@ bool ADHDAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 }
 #endif
 
+
+
+float gain = 4;
+
+bool destroy = false;
+
 void ADHDAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -153,6 +159,15 @@ void ADHDAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
+        
+        for (int i = 0; i<buffer.getNumSamples();++i){
+            if (!destroy){
+                if(channelData[i]>0){
+                    channelData[i] = 1 - exp(-abs(channelData[i]*gain));}
+                else{
+                    channelData[i] = 0;}
+            }
+        }      
 
         // ..do something to the data...
     }
