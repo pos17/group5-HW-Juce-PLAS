@@ -12,14 +12,15 @@
 //==============================================================================
 ADHDAudioProcessor::ADHDAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+    : AudioProcessor(BusesProperties()
+#if ! JucePlugin_IsMidiEffect
+#if ! JucePlugin_IsSynth
+        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+#endif
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+    ),
+    oversamplingModule(2, 2, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple)
 #endif
 {
 }
@@ -95,6 +96,15 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+
+    //initialization of the dsp module in order to process the audio in input to the plugin
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+    
+    //initialization of the oversampling block specifying the maximum num of samples per block
+    oversamplingModule.initProcessing(samplesPerBlock);
 }
 
 void ADHDAudioProcessor::releaseResources()
@@ -150,27 +160,34 @@ void ADHDAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        
-        for (int i = 0; i<buffer.getNumSamples();++i){
-            if (!destroy){
-                if(channelData[i]>0){
-                    channelData[i] = 1 - exp(-abs(channelData[i]*gain));}
-                else{
-                    channelData[i] = 0;}
-            }
-        }      
+    //multi channel audio block that englobes the audio buffer used as audio source before oversampling 
+    juce::dsp::AudioBlock<float> srcBlock (buffer);
+    juce::dsp::AudioBlock<float> overSBlock (buffer);
+    //oversampling the audio signal
+    overSBlock = oversamplingModule.processSamplesUp(srcBlock);
 
-        // ..do something to the data...
+    //in this block we add all the processing to the oversampled signal
+    for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+        for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
+            float* data = overSBlock.getChannelPointer(ch);
+
+            data[sample] = halfWaveAsDist(data[sample]);
+        }
     }
+    oversamplingModule.processSamplesDown(srcBlock);
+    
+    
+    
+}
+ float ADHDAudioProcessor::halfWaveAsDist(float sample) {
+         if (sample > 0) {
+             sample = 1 - exp(-abs(sample * gain));
+         }
+         else {
+             sample = 0;
+         }
+
+     return sample;
 }
 
 //==============================================================================

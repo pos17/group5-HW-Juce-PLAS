@@ -54,6 +54,15 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    //custom private functions 
+        
+    float halfWaveAsDist(float sample);
+
+    //dsp modules declaration
+
+    juce::dsp::Oversampling<float> oversamplingModule;
+
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
 };
