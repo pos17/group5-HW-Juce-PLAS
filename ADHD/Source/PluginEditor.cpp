@@ -10,16 +10,26 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-ADHDAudioProcessorEditor::ADHDAudioProcessorEditor (ADHDAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): AudioProcessorEditor (&p), audioProcessor (p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 300);
+    
+    gainSet.setSliderStyle (juce::Slider::LinearBarVertical);
+    gainSet.setRange(1.0, 20.0, 0.2);
+    gainSet.setTextBoxStyle (juce::Slider::NoTextBox, false, 90, 0);
+    gainSet.setPopupDisplayEnabled (true, false, this);
+    gainSet.setTextValueSuffix ("Volume");
+    gainSet.setValue(1.0);
+    addAndMakeVisible (gainSet);
+    
+    gainSet.addListener (this);
 }
 
 ADHDAudioProcessorEditor::~ADHDAudioProcessorEditor()
 {
+
 }
 
 //==============================================================================
@@ -30,11 +40,15 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.drawFittedText ("Modify Gain", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void ADHDAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    gainSet.setBounds(40, 30, 20, getHeight() - 60);
 }
+
+
+void ADHDAudioProcessorEditor::sliderValueChanged
+(juce::Slider* slider)
+{audioProcessor.gain = gainSet.getValue();}

@@ -13,7 +13,7 @@
 //==============================================================================
 /**
 */
-class ADHDAudioProcessor  : public juce::AudioProcessor
+class ADHDAudioProcessor : public juce::AudioProcessor
 {
 public:
     //==============================================================================
@@ -52,12 +52,17 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    
+    //declaration of variables
+    
+    float gain;
+    
 private:
     //custom private functions 
         
     float halfWaveAsDist(float sample);
-
+    
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModule;
@@ -65,4 +70,6 @@ private:
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
+    
+
 };

@@ -141,7 +141,6 @@ bool ADHDAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 
 
-float gain = 4;
 
 bool destroy = false;
 
