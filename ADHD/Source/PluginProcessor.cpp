@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <math.h>
 
 //==============================================================================
 ADHDAudioProcessor::ADHDAudioProcessor()
@@ -20,13 +21,20 @@ ADHDAudioProcessor::ADHDAudioProcessor()
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
     ),
+    treeState(*this, nullptr, "Parameters", createParameters()),
     oversamplingModule(2, 2, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple)
 #endif
 {
+    overSampFactor = 2;
+    dryBuffer = juce::AudioBuffer<float>();
+    treeState.addParameterListener("GAIN", this);
+    treeState.addParameterListener("DRYWET", this);
 }
 
 ADHDAudioProcessor::~ADHDAudioProcessor()
 {
+    treeState.removeParameterListener("GAIN", this);
+    treeState.removeParameterListener("DRYWET", this);
 }
 
 //==============================================================================
@@ -102,9 +110,11 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
-    
+    dryBuffer = juce::AudioBuffer<float>(getTotalNumOutputChannels(), (int)(samplesPerBlock * pow(2, overSampFactor)));
     //initialization of the oversampling block specifying the maximum num of samples per block
     oversamplingModule.initProcessing(samplesPerBlock);
+
+    
 }
 
 void ADHDAudioProcessor::releaseResources()
@@ -162,15 +172,34 @@ void ADHDAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     //multi channel audio block that englobes the audio buffer used as audio source before oversampling 
     juce::dsp::AudioBlock<float> srcBlock (buffer);
     juce::dsp::AudioBlock<float> overSBlock (buffer);
+    juce::dsp::AudioBlock<float> oversDryBlock(dryBuffer);
     //oversampling the audio signal
     overSBlock = oversamplingModule.processSamplesUp(srcBlock);
 
     //in this block we add all the processing to the oversampled signal
+    //main processing block for distortion
     for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+        float* data = overSBlock.getChannelPointer(ch);
+        float* dryDataCopy = oversDryBlock.getChannelPointer(ch);
         for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-            float* data = overSBlock.getChannelPointer(ch);
+            
+            
+            
 
-            data[sample] = halfWaveAsDist(data[sample]);
+            dryDataCopy[sample] = data[sample];
+            data[sample] = halfWaveAsDist(data[sample],gain);
+        }
+    }
+
+
+
+    //parallel drywet channels Sum
+    for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+        float* data = overSBlock.getChannelPointer(ch);
+        float* dryDataCopy = oversDryBlock.getChannelPointer(ch);
+        for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
+            
+            data[sample] = (dryWet * data[sample]) + ((1.0f - dryWet) * dryDataCopy[sample]);
         }
     }
     oversamplingModule.processSamplesDown(srcBlock);
@@ -178,9 +207,9 @@ void ADHDAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     
     
 }
- float ADHDAudioProcessor::halfWaveAsDist(float sample) {
+ float ADHDAudioProcessor::halfWaveAsDist(float sample, float gainVal) {
          if (sample > 0) {
-             sample = 1 - exp(-abs(sample * gain));
+             sample = 1 - exp(-abs(sample * gainVal));
          }
          else {
              sample = 0;
@@ -197,7 +226,12 @@ bool ADHDAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* ADHDAudioProcessor::createEditor()
 {
-    return new ADHDAudioProcessorEditor (*this);
+    //this is commented only for the purpose of a fast parameter layout
+    //for custom gui return the specific one not the generic one
+ 
+
+    //return new ADHDAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -219,4 +253,30 @@ void ADHDAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new ADHDAudioProcessor();
+}
+
+//Adding the function used to create parameters in the valuetreeState
+juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createParameters() {
+
+    std::vector<std::unique_ptr<juce::RangedAudioParameter >> parameters;
+
+    //reserving the space for the number of parameters we want to create
+    parameters.reserve(2);
+
+    auto gainVal = std::make_unique<juce::AudioParameterFloat>("GAIN", "Drive Gain", 1.0f, 20.0f, 0.0f);
+    parameters.push_back(std::move(gainVal));
+    auto dryWetVal = std::make_unique<juce::AudioParameterFloat> ("DRYWET", "Dry Wet ", 0.0f, 1.0f, 1.0f);
+    parameters.push_back(std::move(dryWetVal));
+
+        return { parameters.begin(),parameters.end() };
+}
+
+
+void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue) {
+    if (parameterID == "GAIN") {
+        gain = newValue;
+        DBG(gain);
+    }else if (parameterID == "DRYWET") {
+            dryWet = newValue;
+    }
 }

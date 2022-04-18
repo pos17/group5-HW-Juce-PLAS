@@ -32,7 +32,7 @@ private:
     ADHDAudioProcessor& audioProcessor;
     juce::Slider gainSet;
 
-    void sliderValueChanged (juce::Slider* slider) override;
+    //void sliderValueChanged (juce::Slider* slider) override;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessorEditor)
 };

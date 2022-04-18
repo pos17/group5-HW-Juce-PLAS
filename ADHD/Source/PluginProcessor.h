@@ -13,7 +13,7 @@
 //==============================================================================
 /**
 */
-class ADHDAudioProcessor : public juce::AudioProcessor
+class ADHDAudioProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -54,19 +54,35 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     
+
+
+    juce::AudioProcessorValueTreeState treeState;
+
     //declaration of variables
     
-    float gain;
+    
     
 private:
+
+    float gain {1.0};
+    float dryWet {1.0};
+    int overSampFactor;
+
+    
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
+
+    
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+
     //custom private functions 
         
-    float halfWaveAsDist(float sample);
+    float halfWaveAsDist(float sample,float gainVal);
     
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModule;
-
+    
+    juce::AudioBuffer<float> dryBuffer;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)

@@ -48,7 +48,8 @@ void ADHDAudioProcessorEditor::resized()
     gainSet.setBounds(40, 30, 20, getHeight() - 60);
 }
 
-
+/*
 void ADHDAudioProcessorEditor::sliderValueChanged
 (juce::Slider* slider)
 {audioProcessor.gain = gainSet.getValue();}
+*/
