@@ -63,11 +63,17 @@ public:
     
     
 private:
-
-    float gain {1.0};
-    float dryWet {1.0};
-    int overSampFactor;
-
+    bool isMidSide{ false };
+    float gain[2]{ 1.0,1.0 };
+    float dryWet[2]{1.0,1.0};
+    float volume[2]{ 1.0,1.0 };
+    bool eqOn[2]{ false,false };
+    int eqSelect[2]{ 0,0 };
+    float eqQ[2]{ 0.1f,0.1f };
+    float eqFreq[2]{ 100.0f,100.0f };
+    int overSampFactor{2};
+    int lastSampleRate{44100};
+    juce::AudioBuffer<float> dryBuffer = juce::AudioBuffer<float>();
     
     void parameterChanged(const juce::String& parameterID, float newValue) override;
 
@@ -81,8 +87,8 @@ private:
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModule;
-    
-    juce::AudioBuffer<float> dryBuffer;
+    juce::dsp::IIR::Filter<float> filterL;
+    juce::dsp::IIR::Filter<float> filterR;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
