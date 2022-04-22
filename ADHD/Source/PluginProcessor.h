@@ -85,7 +85,7 @@ private:
     //distortion behaviour
     float expQuasiSim(float sample, float gainVal);
     float halfWaveAsDist(float sample,float gainVal);
-    
+    float linearMaPoco(float sample, float gainVal);
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModule;
