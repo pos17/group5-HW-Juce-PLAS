@@ -340,10 +340,10 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
  float ADHDAudioProcessor::expQuasiSim(float sample, float gainVal)
  {
      if (sample > 0) {
-         sample = 1 - exp(-abs(sample * gainVal));
+         sample = 1 - exp(-abs(sample * 0.5*gainVal));
      }
      else {
-         sample = 0.3f*(1 - exp(-abs(sample * gainVal)));
+         sample = 0.3f*(1 - exp(-abs(sample *0.5*gainVal)));
      }
      return sample;
  }
