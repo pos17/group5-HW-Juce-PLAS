@@ -43,6 +43,7 @@ ADHDAudioProcessor::ADHDAudioProcessor()
     treeState.addParameterListener("FREQL", this);
     treeState.addParameterListener("QR", this);
     treeState.addParameterListener("FREQR", this);
+    treeState.addParameterListener("DISTTYPE", this);
 }
 
 ADHDAudioProcessor::~ADHDAudioProcessor()
@@ -63,6 +64,7 @@ ADHDAudioProcessor::~ADHDAudioProcessor()
     treeState.removeParameterListener("QL", this);
     treeState.removeParameterListener("EQFREQL", this);
     treeState.removeParameterListener("QR", this);
+    treeState.removeParameterListener("DISTTYPE", this);
     treeState.removeParameterListener("FREQR", this);
 }
 
@@ -280,7 +282,16 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             float* data = overSBlock.getChannelPointer(ch);
 
             for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-                data[sample] = linearMaPoco(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
+                if (distType == 0) {
+                    data[sample] = halfWaveAsDist(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
+                }
+                else if (distType == 1) {
+                    data[sample] = expQuasiSim(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
+                }
+                else if (distType == 2) {
+                    data[sample] = linearMaPoco(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
+
+                }
             }
         }
 
@@ -400,7 +411,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     std::vector<std::unique_ptr<juce::RangedAudioParameter >> parameters;
 
     //reserving the space for the number of parameters we want to create
-    parameters.reserve(15);
+    parameters.reserve(16);
 
     auto bypassVal = std::make_unique<juce::AudioParameterBool>("BYPASS", "Bypass", false);
     parameters.push_back(std::move(bypassVal));
@@ -438,6 +449,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto freqEqR = std::make_unique<juce::AudioParameterFloat>("FREQR", "CutOff freq R", 20.0f, 5000.0f,100.0f);
     parameters.push_back(std::move(freqEqR));
     
+    const char* distTypeList[3] = { "half_wave", "expQuasiSim","linearMaPoco" };
+    const juce::StringArray distTypeStr(distTypeList, 3);
+    auto distTypeSel = std::make_unique<juce::AudioParameterChoice>("DISTTYPE", "distType", distTypeStr, 0);
+    parameters.push_back(std::move(distTypeSel));
+
     return { parameters.begin(),parameters.end() };
 }
 
@@ -490,5 +506,8 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "EQSELECTR") {
         eqSelect[1] = newValue;
+    }
+    else if (parameterID == "DISTTYPE") {
+        distType = newValue;
     }
 }

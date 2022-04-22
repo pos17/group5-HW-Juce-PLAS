@@ -63,6 +63,7 @@ public:
     
     
 private:
+    int distType {0};
     bool bypass{ false };
     bool isMidSide{ false };
     float gain[2]{ 1.0,1.0 };
