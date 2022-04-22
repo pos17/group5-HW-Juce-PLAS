@@ -280,7 +280,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             float* data = overSBlock.getChannelPointer(ch);
 
             for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-                data[sample] = halfWaveAsDist(data[sample], gain[ch]);
+                data[sample] = expQuasiSim(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
             }
         }
 
@@ -336,6 +336,17 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
 
      return sample;
 }
+
+ float ADHDAudioProcessor::expQuasiSim(float sample, float gainVal)
+ {
+     if (sample > 0) {
+         sample = 1 - exp(-abs(sample * gainVal));
+     }
+     else {
+         sample = 0.3f*(1 - exp(-abs(sample * gainVal)));
+     }
+     return sample;
+ }
 
 //==============================================================================
 bool ADHDAudioProcessor::hasEditor() const

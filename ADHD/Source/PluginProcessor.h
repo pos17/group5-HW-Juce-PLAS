@@ -82,7 +82,8 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
     //custom private functions 
-        
+    //distortion behaviour
+    float expQuasiSim(float sample, float gainVal);
     float halfWaveAsDist(float sample,float gainVal);
     
     //dsp modules declaration
