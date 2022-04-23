@@ -22,9 +22,8 @@ ADHDAudioProcessor::ADHDAudioProcessor()
 #endif
     ),
     treeState(*this, nullptr, "Parameters", createParameters()),
-    oversamplingModule(2, overSampFactor, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple),
-    filterL(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100, 20000.0f, 0.1)),
-    filterR(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100, 20000.0f, 0.1))
+    oversamplingModule(2, overSampFactor, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple)
+    
 #endif
 {
     treeState.addParameterListener("BYPASS", this);
@@ -145,10 +144,12 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     dryBuffer = juce::AudioBuffer<float>(getTotalNumOutputChannels(), (int)(samplesPerBlock * pow(2, overSampFactor)));
     //initialization of the oversampling block specifying the maximum num of samples per block
     oversamplingModule.initProcessing(samplesPerBlock);
-    filterL.prepare(spec);
-    filterR.prepare(spec);
+    
     filterL.reset();
     filterR.reset();
+    filterL.prepare(spec);
+    filterR.prepare(spec);
+    
 }
 
 void ADHDAudioProcessor::releaseResources()
@@ -243,37 +244,16 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
 
             }
         }
-
-        //EQ BLOCK L
+        
+        //EQ BLOCK R
         if (eqOn[0]) {
-
-            if (eqSelect[0] == 0) {
-                *filterL.coefficients = *juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, eqFreq[0], eqQ[0]);
-                filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(0)));
-            }
-            else if (eqSelect[0] == 1) {
-                *filterL.coefficients = *juce::dsp::IIR::Coefficients<float>::makeBandPass(lastSampleRate, eqFreq[0], eqQ[0]);
-                filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(0)));
-            }
-            else if (eqSelect[0] == 2) {
-                *filterL.coefficients = *juce::dsp::IIR::Coefficients<float>::makeHighPass(lastSampleRate, eqFreq[0], eqQ[0]);
-                filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(0)));
-            }
+            filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(0)));
         }
         if (eqOn[1]) {
-            if (eqSelect[1] == 0) {
-                *filterL.coefficients = *juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, eqFreq[1], eqQ[1]);
-                filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(1)));
-            }
-            else if (eqSelect[1] == 1) {
-                *filterL.coefficients = *juce::dsp::IIR::Coefficients<float>::makeBandPass(lastSampleRate, eqFreq[1], eqQ[1]);
-                filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(1)));
-            }
-            else if (eqSelect[1] == 2) {
-                *filterL.coefficients = *juce::dsp::IIR::Coefficients<float>::makeHighPass(lastSampleRate, eqFreq[1], eqQ[1]);
-                filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(1)));
-            }
+            filterR.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(1)));
         }
+        
+
 
 
 
@@ -347,6 +327,42 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
 
      return sample;
 }
+
+ void ADHDAudioProcessor::updateFilters(int numOfFilter, int type, float q, float freq)
+ {
+     if (numOfFilter == 0) {
+         if (type == 0) {
+             filterL.parameters->type = juce::dsp::
+                 StateVariableFilter::Parameters<float>::Type::lowPass;
+             filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+         } else if(type==1){
+             filterL.parameters->type = juce::dsp::
+                 StateVariableFilter::Parameters<float>::Type::bandPass;
+             filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+         }
+         else if (type == 2) {
+             filterL.parameters->type = juce::dsp::
+                 StateVariableFilter::Parameters<float>::Type::highPass;
+             filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+          }
+      } else if (numOfFilter == 1) {
+          if (type == 0) {
+              filterR.parameters->type = juce::dsp::
+                  StateVariableFilter::Parameters<float>::Type::lowPass;
+              filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+          }
+          else if (type == 1) {
+              filterR.parameters->type = juce::dsp::
+                  StateVariableFilter::Parameters<float>::Type::bandPass;
+              filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+          }
+          else if (type == 2) {
+              filterR.parameters->type = juce::dsp::
+                  StateVariableFilter::Parameters<float>::Type::highPass;
+              filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+          }
+      }
+ }
 
  float ADHDAudioProcessor::expQuasiSim(float sample, float gainVal)
  {
@@ -436,7 +452,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     parameters.push_back(std::move(eqOnL));
     auto eqSelectL = std::make_unique<juce::AudioParameterChoice>("EQSELECTL","eq select L",eqSettings,0);
     parameters.push_back(std::move(eqSelectL));
-    auto eqQL = std::make_unique<juce::AudioParameterFloat> ("QL", "Q factor L", 0.1f, 100.0f, 0.5f);
+    auto eqQL = std::make_unique<juce::AudioParameterFloat> ("QL", "Q factor L", 0.1f, 1.0f, 0.5f);
     parameters.push_back(std::move(eqQL));
     auto freqEqL = std::make_unique<juce::AudioParameterFloat> ("FREQL", "CutOff freq L", 20.0f, 5000.0f,100.0f);
     parameters.push_back(std::move(freqEqL));
@@ -444,7 +460,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     parameters.push_back(std::move(eqOnR));
     auto eqSelectR = std::make_unique<juce::AudioParameterChoice>("EQSELECTR", "eq select R", eqSettings, 0);
     parameters.push_back(std::move(eqSelectR));
-    auto eqQR = std::make_unique<juce::AudioParameterFloat>("QR", "Q factor R", 0.1f, 100.0f, 0.5f);
+    auto eqQR = std::make_unique<juce::AudioParameterFloat>("QR", "Q factor R", 0.1f, 1.0f, 0.5f);
     parameters.push_back(std::move(eqQR));
     auto freqEqR = std::make_unique<juce::AudioParameterFloat>("FREQR", "CutOff freq R", 20.0f, 5000.0f,100.0f);
     parameters.push_back(std::move(freqEqR));
@@ -491,21 +507,27 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "QL") {
         eqQ[0] = newValue;
+        updateFilters(0, eqSelect[0], eqQ[0], eqFreq[0]);
     }
     else if (parameterID == "QR") {
         eqQ[1] = newValue;
+        updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
     }
     else if (parameterID == "FREQL") {
         eqFreq[0] = newValue;
+        updateFilters(0, eqSelect[0], eqQ[0], eqFreq[0]);
     }
     else if (parameterID == "FREQR") {
         eqFreq[1] = newValue;
+        updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
     }
     else if (parameterID == "EQSELECTL") {
         eqSelect[0] = newValue;
+        updateFilters(0, eqSelect[0], eqQ[0], eqFreq[0]);
     }
     else if (parameterID == "EQSELECTR") {
         eqSelect[1] = newValue;
+        updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
     }
     else if (parameterID == "DISTTYPE") {
         distType = newValue;
