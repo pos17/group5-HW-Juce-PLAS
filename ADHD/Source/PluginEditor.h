@@ -33,22 +33,11 @@ private:
     ChannelComponent channelL;
     ChannelComponent channelR;
 
+    juce::Slider destroyDial;
+    juce::ToggleButton destroyButton;
+    juce::ToggleButton LRButton;
+    juce::ToggleButton MSButton;
 
-    /*juce::Slider inGainDialL;
-    juce::Slider outGainDialL;
-    juce::Slider clipDialL;
-    juce::Slider toneDialL;
-    juce::Slider freqDialL;
-
-    juce::ToggleButton filterOnL;
-    juce::ToggleButton filterLPL;
-    juce::ToggleButton filterBPL;
-    juce::ToggleButton filterHPL;
-
-    juce::Slider inGainDialR;
-    juce::Slider outGainDialR;
-    juce::Slider clipDialR;
-    juce::Slider toneDialR;*/
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADHDAudioProcessorEditor);
 };

@@ -16,34 +16,45 @@ ChannelComponent::ChannelComponent()
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
+    freqDial.setRange(0.0, 1.0, 1. / 128);
+    freqDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    freqDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+
+    qFactorDial.setRange(0.0, 1.0, 1. / 128);
+    qFactorDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    qFactorDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+
     inGainDial.setRange(0.0, 1.0, 1. / 128);
     inGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     inGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-
-    outGainDial.setRange(0.0, 1.0, 1. / 128);
-    outGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    outGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-
-    clipDial.setRange(0.0, 1.0, 1. / 128);
-    clipDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    clipDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 
     toneDial.setRange(0.0, 1.0, 1. / 128);
     toneDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     toneDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 
-    freqDial.setRange(0.0, 1.0, 1. / 128);
-    freqDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    freqDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    outGainDial.setRange(0.0, 1.0, 1. / 128);
+    outGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    outGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 
+    drywetDial.setRange(0.0, 1.0, 1. / 128);
+    drywetDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    drywetDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+
+    channelOn.setToggleState(true, false);
     filterOn.setToggleState(true, false);
 
     //ADD AND MAKE VISIBLE
+    addAndMakeVisible(freqDial);
+
     addAndMakeVisible(inGainDial);
     addAndMakeVisible(outGainDial);
-    addAndMakeVisible(clipDial);
+    addAndMakeVisible(qFactorDial);
     addAndMakeVisible(toneDial);
-    addAndMakeVisible(freqDial);
+
+    addAndMakeVisible(drywetDial);
+
+
+    addAndMakeVisible(channelOn);
 
     addAndMakeVisible(filterOn);
     addAndMakeVisible(filterLP);
@@ -57,58 +68,75 @@ ChannelComponent::~ChannelComponent()
 
 void ChannelComponent::paint (juce::Graphics& g)
 {
-    g.setColour(juce::Colours::red);
-    g.drawRect(getLocalBounds());
+    const int buttonDimension = 30; //px
+    const int primaryDialDimension = 120; //px
+    const int secondaryDialDimension = 80; //px
+
+    //Buttons Bounds
+    juce::Rectangle<int> channelOnArea(20, 65, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterOnArea(123, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterLPArea(157, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterBPArea(193, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterHPArea(227, 20, buttonDimension, buttonDimension);
+
+    //Dials Bounds
+    juce::Rectangle<int> freqDialArea(109, 62, secondaryDialDimension, secondaryDialDimension);
+    juce::Rectangle<int> qFactorDialArea(189, 62, secondaryDialDimension, secondaryDialDimension);
+    juce::Rectangle<int> inGainDialArea(292, 20, primaryDialDimension, primaryDialDimension);
+    juce::Rectangle<int> toneDialArea(428, 40, secondaryDialDimension, secondaryDialDimension);
+    juce::Rectangle<int> outGainDialArea(524, 20, primaryDialDimension, primaryDialDimension);
+    juce::Rectangle<int> drywetDialArea(660, 40, secondaryDialDimension, secondaryDialDimension);
+
+    g.setColour(juce::Colours::aquamarine);
+    g.drawRect(inGainDialArea);
+    g.drawRect(outGainDialArea);
+    g.drawRect(toneDialArea);
+    g.drawRect(drywetDialArea);
+    g.drawRect(channelOnArea);
+
+    g.setColour(juce::Colours::pink);
+    g.drawRect(filterOnArea);
+    g.drawRect(filterLPArea);
+    g.drawRect(filterBPArea);
+    g.drawRect(filterHPArea);
+    g.drawRect(freqDialArea);
+    g.drawRect(qFactorDialArea);
 }
 
 void ChannelComponent::resized()
 {
-    const int wL = getWidth();
-    const int hL = getHeight();
-    //const int xL = getX();
-    //const int yL = getY();
-    DBG("wL: " << wL <<"\nhL: " << hL);
+    const int buttonDimension = 30; //px
+    const int primaryDialDimension = 120; //px
+    const int secondaryDialDimension = 80; //px
 
-    juce::Rectangle<int> filterContainerL(0, 0, wL / 4, hL);
-    juce::Rectangle<int> dialsContainerL(filterContainerL.getWidth(), 0, 3 * wL / 4, hL);
+    //Buttons Bounds
+    juce::Rectangle<int> channelOnArea(20, 65, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterOnArea(123, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterLPArea(157, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterBPArea(193, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterHPArea(227, 20, buttonDimension, buttonDimension);
+
+    //Dials Bounds
+    juce::Rectangle<int> freqDialArea(109, 62, secondaryDialDimension, secondaryDialDimension);
+    juce::Rectangle<int> qFactorDialArea(189, 62, secondaryDialDimension, secondaryDialDimension);
+    juce::Rectangle<int> inGainDialArea(292, 20, primaryDialDimension, primaryDialDimension);
+    juce::Rectangle<int> toneDialArea(428, 40, secondaryDialDimension, secondaryDialDimension);
+    juce::Rectangle<int> outGainDialArea(524, 20, primaryDialDimension, primaryDialDimension);
+    juce::Rectangle<int> drywetDialArea(660, 40, secondaryDialDimension, secondaryDialDimension);
     
-    // Input Filter
-    const int dim = 30; //px
-    const int wFL = filterContainerL.getWidth();
-    const int hFL = filterContainerL.getHeight();
-    const int xFL0 = filterContainerL.getX();
-    const int yFL = filterContainerL.getY() + (dim / 2);
-
-    int xFL = (wFL - (4 * dim)) / 8;
-    
-    juce::Rectangle<int> filterOnAreaL(xFL0 + xFL, yFL, dim, dim);
-    juce::Rectangle<int> filterLPAreaL(xFL0 + (3 * xFL) + dim, yFL, dim, dim);
-    juce::Rectangle<int> filterBPAreaL(xFL0 + (5 * xFL) + (2 * dim), yFL, dim, dim);
-    juce::Rectangle<int> filterHPAreaL(xFL0 + (7 * xFL) + (3 * dim), yFL, dim, dim);
-
-    juce::Rectangle<int> freqDialAreaL(xFL0, yFL - (dim / 2) + (hFL / 3), wFL, hFL * 2 / 3);
-
-    // Main Dials
-    const int wDL = dialsContainerL.getWidth();
-    const int hDL = dialsContainerL.getHeight();
-    const int xDL = dialsContainerL.getX();
-    const int yDL = dialsContainerL.getY();
-
-    juce::Rectangle<int> inGainDialAreaL(xDL, yDL, wDL / 3, hDL);
-    juce::Rectangle<int> outGainDialAreaL(xDL + (2 * wDL / 3), yDL, wDL / 3, hDL);
-    juce::Rectangle<int> clipDialAreaL(xDL + (wDL / 3), yDL + (hDL / 4), wDL / 6, hDL / 2);
-    juce::Rectangle<int> toneDialAreaL(xDL + (wDL / 2), yDL + (hDL / 4), wDL / 6, hDL / 2);
-
+        
 
     //SETTING BOUNDS
-    inGainDial.setBounds(inGainDialAreaL);
-    outGainDial.setBounds(outGainDialAreaL);
-    clipDial.setBounds(clipDialAreaL);
-    toneDial.setBounds(toneDialAreaL);
-    freqDial.setBounds(freqDialAreaL);
+    freqDial.setBounds(freqDialArea);
+    qFactorDial.setBounds(qFactorDialArea);
+    inGainDial.setBounds(inGainDialArea);
+    toneDial.setBounds(toneDialArea);
+    outGainDial.setBounds(outGainDialArea);
+    drywetDial.setBounds(drywetDialArea);
 
-    filterOn.setBounds(filterOnAreaL);
-    filterLP.setBounds(filterLPAreaL);
-    filterBP.setBounds(filterBPAreaL);
-    filterHP.setBounds(filterHPAreaL);
+    channelOn.setBounds(channelOnArea);
+    filterOn.setBounds(filterOnArea);
+    filterLP.setBounds(filterLPArea);
+    filterBP.setBounds(filterBPArea);
+    filterHP.setBounds(filterHPArea);
 }

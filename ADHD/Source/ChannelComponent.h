@@ -25,13 +25,19 @@ public:
     void resized() override;
 
 private:
-    
+    // Dials
+    juce::Slider freqDial;
+    juce::Slider qFactorDial;
+
     juce::Slider inGainDial;
     juce::Slider outGainDial;
-    juce::Slider clipDial;
     juce::Slider toneDial;
 
-    juce::Slider freqDial;
+    juce::Slider drywetDial;    
+
+
+    // Buttons
+    juce::ToggleButton channelOn;
 
     juce::ToggleButton filterOn;
     juce::ToggleButton filterLP;
