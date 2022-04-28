@@ -90,8 +90,8 @@ private:
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModule;
-    juce::dsp::StateVariableFilter::Filter<float> filterL;
-    juce::dsp::StateVariableFilter::Filter<float> filterR;
+    juce::dsp::StateVariableTPTFilter::Filter<float> filterL;
+    juce::dsp::StateVariableTPTFilter::Filter<float> filterR;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
