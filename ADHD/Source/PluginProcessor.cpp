@@ -332,7 +332,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
  {
      if (numOfFilter == 0) {
          if (type == 0) {
-             filterL.parameters->type = juce::dsp::StateVariableTPTFilter<float>::Type::lowpass;
+             filterL.parameters->type = juce::dsp::StateVariableFilter<float>::Type::lowpass;
              filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
          } else if(type==1){
              filterL.parameters->type = juce::dsp::
