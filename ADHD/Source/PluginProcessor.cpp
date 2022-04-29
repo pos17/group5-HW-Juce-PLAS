@@ -1,10 +1,10 @@
 /*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ This file contains the basic framework code for a JUCE plugin processor.
+ 
+ ==============================================================================
+ */
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -13,17 +13,18 @@
 //==============================================================================
 ADHDAudioProcessor::ADHDAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-    : AudioProcessor(BusesProperties()
+: AudioProcessor(BusesProperties()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
-        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+                 .withInput("Input", juce::AudioChannelSet::stereo(), true)
 #endif
-        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+                 .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    ),
-    treeState(*this, nullptr, "Parameters", createParameters()),
-    oversamplingModule(2, overSampFactor, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple)
-    
+                 ),
+treeState(*this, nullptr, "Parameters", createParameters()),
+oversamplingModuleL(1, overSampFactor, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple),
+oversamplingModuleR(1, overSampFactor, juce::dsp::Oversampling<float>::FilterType::filterHalfBandFIREquiripple)
+
 #endif
 {
     treeState.addParameterListener("BYPASS", this);
@@ -47,7 +48,7 @@ ADHDAudioProcessor::ADHDAudioProcessor()
 
 ADHDAudioProcessor::~ADHDAudioProcessor()
 {
-
+    
     treeState.removeParameterListener("BYPASS", this);
     treeState.removeParameterListener("MIDSIDE", this);
     treeState.removeParameterListener("GAINL", this);
@@ -75,29 +76,29 @@ const juce::String ADHDAudioProcessor::getName() const
 
 bool ADHDAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool ADHDAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool ADHDAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double ADHDAudioProcessor::getTailLengthSeconds() const
@@ -108,7 +109,7 @@ double ADHDAudioProcessor::getTailLengthSeconds() const
 int ADHDAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int ADHDAudioProcessor::getCurrentProgram()
@@ -134,16 +135,20 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-
+    
     //initialization of the dsp module in order to process the audio in input to the plugin
     juce::dsp::ProcessSpec spec;
     spec.sampleRate = sampleRate;
     lastSampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
-    dryBuffer = juce::AudioBuffer<float>(getTotalNumOutputChannels(), (int)(samplesPerBlock * pow(2, overSampFactor)));
+    dryBufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    dryBufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    bufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
+    bufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
     //initialization of the oversampling block specifying the maximum num of samples per block
-    oversamplingModule.initProcessing(samplesPerBlock);
+    oversamplingModuleL.initProcessing(samplesPerBlock);
+    oversamplingModuleR.initProcessing(samplesPerBlock);
     
     filterL.reset();
     filterR.reset();
@@ -161,26 +166,26 @@ void ADHDAudioProcessor::releaseResources()
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool ADHDAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
-
+    
     // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+#if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
-
+#endif
+    
     return true;
-  #endif
+#endif
 }
 #endif
 
@@ -191,10 +196,11 @@ bool destroy = false;
 
 void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
+    
     bool isInternalMidSide = isMidSide;
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -204,185 +210,226 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
-
-    //multi channel audio block that englobes the audio buffer used as audio source before oversampling 
-    juce::dsp::AudioBlock<float> srcBlock(buffer);
-    juce::dsp::AudioBlock<float> overSBlock(buffer);
-    juce::dsp::AudioBlock<float> oversDryBlock(dryBuffer);
     
-
+    
+    
+    
+    //multi channel audio block that englobes the audio buffer used as audio source before oversampling
+    juce::dsp::AudioBlock<float> srcBlockL(bufferL);
+    juce::dsp::AudioBlock<float> srcBlockR(bufferR);
+    juce::dsp::AudioBlock<float> overSBlockL(buffer);
+    juce::dsp::AudioBlock<float> overSBlockR(buffer);
+    //juce::dsp::AudioBlock<float> overSBlockEq(buffer);
+    juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
+    juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
+    
+    
     //optional bypass application
     if (!bypass) {
-    
-    
-    //oversampling the audio signal
-    overSBlock = oversamplingModule.processSamplesUp(srcBlock);
-
-    
-
+        
+        for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
+            bufferL.getWritePointer(0)[sample] = buffer.getReadPointer(0)[sample];
+            bufferR.getWritePointer(0)[sample] = buffer.getReadPointer(1)[sample];
+            
+        }
+        //oversampling the audio signal
+        overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
+        overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
+        
+        
+        
         //Mid-Side encoding
         if (isInternalMidSide) {
-            for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-                float* dataL = overSBlock.getChannelPointer(0);
-                float* dataR = overSBlock.getChannelPointer(1);
-
+            for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+                float* dataL = overSBlockL.getChannelPointer(0);
+                float* dataR = overSBlockR.getChannelPointer(0);
+                
                 float dataMid = dataL[sample] + dataR[sample];
                 float dataSide = dataL[sample] - dataR[sample];
-
+                
                 dataL[sample] = dataMid * sqrt(2) / 2;
                 dataR[sample] = dataSide * sqrt(2) / 2;
-
+                
             }
         }
+        
         // drycopy save before distortion
-        for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-            float* data = overSBlock.getChannelPointer(ch);
-            float* dryDataCopy = oversDryBlock.getChannelPointer(ch);
-
-            for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-                dryDataCopy[sample] = data[sample];
-
-            }
+        //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+        float* dataL = overSBlockL.getChannelPointer(0);
+        float* dryDataCopyL = oversDryBlockL.getChannelPointer(0);
+        float* dataR = overSBlockR.getChannelPointer(0);
+        float* dryDataCopyR = oversDryBlockR.getChannelPointer(0);
+        
+        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+            dryDataCopyL[sample] = dataL[sample];
+            dryDataCopyR[sample] = dataR[sample];
+            
+            
         }
+        
         
         //EQ BLOCK R
         if (eqOn[0]) {
-            filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(0)));
+            filterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlockL));
         }
         if (eqOn[1]) {
-            filterR.process(juce::dsp::ProcessContextReplacing <float>(overSBlock.getSingleChannelBlock(1)));
+            filterR.process(juce::dsp::ProcessContextReplacing <float>(overSBlockR));
         }
         
-
-
-
-
-        // distortion 
-        for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-            float* data = overSBlock.getChannelPointer(ch);
-
-            for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-                if (distType == 0) {
-                    data[sample] = halfWaveAsDist(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
-                }
-                else if (distType == 1) {
-                    data[sample] = expQuasiSim(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
-                }
-                else if (distType == 2) {
-                    data[sample] = linearMaPoco(data[sample], gain[ch]);//halfWaveAsDist(data[sample], gain[ch]);
-
-                }
+        
+        
+        
+        
+        // distortion
+        //        for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+        float* dataDistL = overSBlockL.getChannelPointer(0);
+        float* dataDistR = overSBlockR.getChannelPointer(0);
+        
+        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+            if (distType == 0) {
+                dataDistL[sample] = halfWaveAsDist(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+                dataDistR[sample] = halfWaveAsDist(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+            }
+            else if (distType == 1) {
+                dataDistL[sample] = expQuasiSim(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+                dataR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+                
+            }
+            else if (distType == 2) {
+                dataL[sample] = linearMaPoco(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+                dataR[sample] = linearMaPoco(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
             }
         }
-
-
-
+        //      }
+        
+        
+        
         //parallel drywet channels Sum
-        for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-            float* data = overSBlock.getChannelPointer(ch);
-            float* dryDataCopy = oversDryBlock.getChannelPointer(ch);
-            for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-
-                data[sample] = (dryWet[ch] * data[sample]) + ((1.0f - dryWet[ch]) * dryDataCopy[sample]);
-
-            }
+        //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+        float* dataDwL = overSBlockL.getChannelPointer(0);
+        float* dryDataCopyDwL = oversDryBlockL.getChannelPointer(0);
+        float* dataDwR = overSBlockR.getChannelPointer(0);
+        float* dryDataCopyDwR = oversDryBlockR.getChannelPointer(0);
+        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+            dataDwL[sample] = (dryWet[0] * dataDwL[sample]) + ((1.0f - dryWet[0]) * dryDataCopyDwL[sample]);
+            dataDwR[sample] = (dryWet[1] * dataDwR[sample]) + ((1.0f - dryWet[1]) * dryDataCopyDwR[sample]);
         }
+        //}
         //volume application
-        for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-            float* data = overSBlock.getChannelPointer(ch);
-            float* dryDataCopy = oversDryBlock.getChannelPointer(ch);
-            for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-
-                data[sample] = data[sample] * volume[ch];
-
-            }
-        }
+        
+        overSBlockL.multiplyBy(volume[0]);
+        overSBlockR.multiplyBy(volume[1]);
+        oversDryBlockL.multiplyBy(volume[0]);
+        oversDryBlockR.multiplyBy(volume[1]);
+        /*
+         for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+         float* data = overSBlock.getChannelPointer(ch);
+         //float* dryDataCopy = oversDryBlock.getChannelPointer(ch);
+         for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
+         
+         data[sample] = data[sample] * volume[ch];
+         
+         }
+         }
+         */
         //mid-side decoding
+        
         if (isInternalMidSide) {
-            for (int sample = 0; sample < overSBlock.getNumSamples(); sample++) {
-                float* dataMid = overSBlock.getChannelPointer(0);
-                float* dataSide = overSBlock.getChannelPointer(1);
-
+            for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+                float* dataMid = overSBlockL.getChannelPointer(0);
+                float* dataSide = overSBlockR.getChannelPointer(0);
+                
                 float dataL = dataMid[sample] + dataSide[sample];
                 float dataR = dataMid[sample] - dataSide[sample];
-
+                
                 dataMid[sample] = dataL;
                 dataSide[sample] = dataR;
-
+                
+                
             }
         }
         //downsampling
-        oversamplingModule.processSamplesDown(srcBlock);
+        oversamplingModuleL.processSamplesDown(srcBlockL);
+        oversamplingModuleR.processSamplesDown(srcBlockR);
+        for (auto i = 0; i < totalNumOutputChannels; ++i)
+            buffer.clear(i, 0, buffer.getNumSamples());
+        
+        for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
+            
+            buffer.getWritePointer(0)[sample] = bufferL.getReadPointer(0)[sample];
+            buffer.getWritePointer(1)[sample] = bufferR.getReadPointer(0)[sample];
+            
+        }
+    }
+}
 
+float ADHDAudioProcessor::halfWaveAsDist(float sample, float gainVal) {
+    if (sample > 0) {
+        sample = 1 - exp(-abs(sample * gainVal));
+    }
+    else {
+        sample = 0;
     }
     
-}
- float ADHDAudioProcessor::halfWaveAsDist(float sample, float gainVal) {
-         if (sample > 0) {
-             sample = 1 - exp(-abs(sample * gainVal));
-         }
-         else {
-             sample = 0;
-         }
-
-     return sample;
+    return sample;
 }
 
- void ADHDAudioProcessor::updateFilters(int numOfFilter, int type, float q, float freq)
- {
-     if (numOfFilter == 0) {
-         if (type == 0) {
-             filterL.parameters->type = juce::dsp::StateVariableFilter<float>::Type::lowpass;
-             filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
-         } else if(type==1){
-             filterL.parameters->type = juce::dsp::
-                 StateVariableFilter::Parameters<float>::Type::bandPass;
-             filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
-         }
-         else if (type == 2) {
-             filterL.parameters->type = juce::dsp::
-                 StateVariableFilter::Parameters<float>::Type::highPass;
-             filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
-          }
-      } else if (numOfFilter == 1) {
-          if (type == 0) {
-              filterR.parameters->type = juce::dsp::
-                  StateVariableFilter::Parameters<float>::Type::lowPass;
-              filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
-          }
-          else if (type == 1) {
-              filterR.parameters->type = juce::dsp::
-                  StateVariableFilter::Parameters<float>::Type::bandPass;
-              filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
-          }
-          else if (type == 2) {
-              filterR.parameters->type = juce::dsp::
-                  StateVariableFilter::Parameters<float>::Type::highPass;
-              filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
-          }
-      }
- }
+void ADHDAudioProcessor::updateFilters(int numOfFilter, int type, float q, float freq)
+{
+    if (numOfFilter == 0) {
+        if (type == 0) {
+            filterL.parameters->type = juce::dsp::
+            StateVariableFilter::Parameters<float>::Type::lowPass;
+            filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+        } else if(type==1){
+            filterL.parameters->type = juce::dsp::
+            StateVariableFilter::Parameters<float>::Type::bandPass;
+            filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+        }
+        else if (type == 2) {
+            filterL.parameters->type = juce::dsp::
+            StateVariableFilter::Parameters<float>::Type::highPass;
+            filterL.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+        }
+    } else if (numOfFilter == 1) {
+        if (type == 0) {
+            filterR.parameters->type = juce::dsp::
+            StateVariableFilter::Parameters<float>::Type::lowPass;
+            filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+        }
+        else if (type == 1) {
+            filterR.parameters->type = juce::dsp::
+            StateVariableFilter::Parameters<float>::Type::bandPass;
+            filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+        }
+        else if (type == 2) {
+            filterR.parameters->type = juce::dsp::
+            StateVariableFilter::Parameters<float>::Type::highPass;
+            filterR.parameters->setCutOffFrequency(lastSampleRate, freq, q);
+        }
+    }
+}
 
- float ADHDAudioProcessor::expQuasiSim(float sample, float gainVal)
- {
-     if (sample > 0) {
-         sample = 1 - exp(-abs(sample *0.1*gainVal));
-     }
-     else {
-         sample = 0.3f*(1 - exp(+abs(sample * 0.1 * gainVal)));
-     }
-     return sample;
- }
+float ADHDAudioProcessor::expQuasiSim(float sample, float gainVal)
+{
+    if (sample > 0) {
+        sample = 1 - exp(-abs(sample *0.1*gainVal));
+    }
+    else {
+        sample = 0.3f*(1 - exp(+abs(sample * 0.1 * gainVal)));
+    }
+    return sample;
+}
 
 float ADHDAudioProcessor::linearMaPoco(float sample, float gainVal) {
-     if (sample > 0) {
-         sample = 1 - exp(-abs(sample * 0.1 * gainVal));
-     }
-     else {
-         sample =-0.5* (1 - exp(+abs(sample * 0.1 * gainVal)));
-     }
-     return sample;
- }
+    if (sample > 0) {
+        sample = 1 - exp(-abs(sample * 0.1 * gainVal));
+    }
+    else {
+        sample =-0.5* (1 - exp(+abs(sample * 0.1 * gainVal)));
+    }
+    return sample;
+}
 //==============================================================================
 bool ADHDAudioProcessor::hasEditor() const
 {
@@ -393,8 +440,8 @@ juce::AudioProcessorEditor* ADHDAudioProcessor::createEditor()
 {
     //this is commented only for the purpose of a fast parameter layout
     //for custom gui return the specific one not the generic one
- 
-
+    
+    
     //return new ADHDAudioProcessorEditor (*this);
     return new juce::GenericAudioProcessorEditor(*this);
 }
@@ -422,12 +469,12 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 //Adding the function used to create parameters in the valuetreeState
 juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createParameters() {
-
+    
     std::vector<std::unique_ptr<juce::RangedAudioParameter >> parameters;
-
+    
     //reserving the space for the number of parameters we want to create
     parameters.reserve(16);
-
+    
     auto bypassVal = std::make_unique<juce::AudioParameterBool>("BYPASS", "Bypass", false);
     parameters.push_back(std::move(bypassVal));
     auto midSideVal = std::make_unique<juce::AudioParameterBool>("MIDSIDE", "MidSide", false);
@@ -468,7 +515,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     const juce::StringArray distTypeStr(distTypeList, 3);
     auto distTypeSel = std::make_unique<juce::AudioParameterChoice>("DISTTYPE", "distType", distTypeStr, 0);
     parameters.push_back(std::move(distTypeSel));
-
+    
     return { parameters.begin(),parameters.end() };
 }
 
@@ -479,9 +526,9 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
         
     }else if (parameterID == "GAINR") {
         gain[1] = newValue;
-
+        
     } else if (parameterID == "DRYWETL") {
-            dryWet[0] = newValue;
+        dryWet[0] = newValue;
     }
     else if (parameterID == "DRYWETR") {
         dryWet[1] = newValue;

@@ -75,7 +75,11 @@ private:
     float eqFreq[2]{ 100.0f,100.0f };
     int overSampFactor{2};
     int lastSampleRate{44100};
-    juce::AudioBuffer<float> dryBuffer = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> dryBufferL = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> dryBufferR = juce::AudioBuffer<float>();
+    
+    juce::AudioBuffer<float> bufferL = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> bufferR = juce::AudioBuffer<float>();
     
     void parameterChanged(const juce::String& parameterID, float newValue) override;
     void updateFilters(int numOfFilter,int type,float freq, float q);
@@ -89,7 +93,8 @@ private:
     float linearMaPoco(float sample, float gainVal);
     //dsp modules declaration
 
-    juce::dsp::Oversampling<float> oversamplingModule;
+    juce::dsp::Oversampling<float> oversamplingModuleL;
+    juce::dsp::Oversampling<float> oversamplingModuleR;
     juce::dsp::StateVariableFilter::Filter<float> filterL;
     juce::dsp::StateVariableFilter::Filter<float> filterR;
 
