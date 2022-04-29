@@ -10,13 +10,20 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "ChannelComponent.h"
+#include "PlasLookAndFeel.h"
+
 
 
 //==============================================================================
 /**
 */
+<<<<<<< HEAD
 class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor,
 public juce::Slider::Listener
+=======
+class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor//, public juce::Slider::Listener
+>>>>>>> relativeGUI
 {
 public:
     ADHDAudioProcessorEditor (ADHDAudioProcessor&);
@@ -29,10 +36,30 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    ADHDAudioProcessor& audioProcessor;
-    juce::Slider gainSet;
+    ADHDAudioProcessor& audioProcessor; 
 
-    //void sliderValueChanged (juce::Slider* slider) override;
+    ChannelComponent channelL;
+    ChannelComponent channelR;
+
+    juce::Slider destroyDial;
+    juce::ToggleButton destroyButton;
+    juce::ToggleButton LRButton;
+    juce::ToggleButton MSButton;
+
+    juce::ToggleButton linkButton;
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessorEditor)
+    //LOOK AND FEEL
+    
+    PLASBigKnobLookFeel bkLeF {};
+    PLASLittleKnobLookFeel lkLeF {};
+    PLASDestroyButtonLookAndFeel dbLeF {};
+    PLASButLinkLookAndFeel blLeF {};
+    PLASButOnLookAndFeel bOLeF {};
+    PLASButLPLookAndFeel bLPLeF {};
+    PLASButBPLookAndFeel bBPLeF {};
+    PLASButHPLookAndFeel bHPLeF {};
+    PLASButMSLookAndFeel bMSLeF {};
+    PLASButLRLookAndFeel bLRLeF {};
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADHDAudioProcessorEditor);
 };
