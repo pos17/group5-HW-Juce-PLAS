@@ -1,12 +1,12 @@
 /*
-  ==============================================================================
-
-    PlasLookAndFeel.cpp
-    Created: 12 Apr 2022 3:32:30pm
-    Author:  Pox17
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ PlasLookAndFeel.cpp
+ Created: 12 Apr 2022 3:32:30pm
+ Author:  Pox17
+ 
+ ==============================================================================
+ */
 
 #include "PlasLookAndFeel.h"
 #include <BinaryData.cpp>
@@ -16,7 +16,7 @@ PLASLookAndFeel::PLASLookAndFeel()
     knobStripN = juce::Image();
     knobStripD = juce::Image();
     frames = 0;
-    destroy = false; 
+    destroy = false;
 }
 
 void PLASLookAndFeel::setKnobStripN(juce::Image src) {
@@ -32,13 +32,13 @@ void PLASLookAndFeel::setDestroy(bool dest) {
     destroy = dest;
 }
 void PLASLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
-    const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider) 
+                                       const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
     juce::Image knobStrip = juce::Image();
     
     if(destroy) {
         knobStrip = knobStripD;
-    } 
+    }
     else {
         knobStrip = knobStripN;
     }
@@ -64,14 +64,21 @@ void PLASLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int widt
 }
 
 /*
-    knobs LookAndFeel implementation
-*/
+ knobs LookAndFeel implementation
+ */
 
 PLASBigKnobLookFeel::PLASBigKnobLookFeel() {
-    PLASLookAndFeel::setKnobStripD(juce::ImageCache::getFromMemory(BinaryData::bigKnobD_png, BinaryData::bigKnobD_pngSize));
-    PLASLookAndFeel::setKnobStripN(juce::ImageCache::getFromMemory(BinaryData::bigKnobN_png, BinaryData::bigKnobN_pngSize));
+    PLASLookAndFeel::setKnobStripD(juce::ImageCache::getFromMemory(BinaryData::Primary_Destroyed_png, BinaryData::Primary_Destroyed_pngSize));
+    PLASLookAndFeel::setKnobStripN(juce::ImageCache::getFromMemory(BinaryData::Primary_png, BinaryData::Primary_pngSize));
     PLASLookAndFeel::setFrames(128);
 }
+
+PLASLittleKnobLookFeel::PLASLittleKnobLookFeel() {
+    PLASLookAndFeel::setKnobStripD(juce::ImageCache::getFromMemory(BinaryData::Secondary_Destroyed_png, BinaryData::Secondary_Destroyed_pngSize));
+    PLASLookAndFeel::setKnobStripN(juce::ImageCache::getFromMemory(BinaryData::Secondary_png, BinaryData::Secondary_pngSize));
+    PLASLookAndFeel::setFrames(128);
+}
+
 
 PLASDestroyButtonLookAndFeel::PLASDestroyButtonLookAndFeel() {
     buttonOff = juce::ImageCache::getFromMemory(BinaryData::dButtonOff_png, BinaryData::dButtonOff_pngSize);
@@ -81,7 +88,7 @@ PLASDestroyButtonLookAndFeel::PLASDestroyButtonLookAndFeel() {
 void PLASDestroyButtonLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
     juce::Image btn = juce::Image();
-
+    
     if (button.getToggleState()) {
         btn = buttonOn;
     }
@@ -106,24 +113,82 @@ void PLASDestroyButtonLookAndFeel::drawToggleButton(juce::Graphics& g, juce::Tog
     int sX = centerX - (btDimW / 2);
     int sY = centerY - (btDimH / 2);
     g.drawImage(btn, sX, sY, btDimW, btDimH, 0, 0, frameDimW, frameDimH);
-    /*
-    auto font = getTextButtonFont(button, button.getHeight());
-    g.setFont(font);
-    g.setColour(button.findColour(button.getToggleState() ? juce::TextButton::textColourOnId
-        : juce::TextButton::textColourOffId)
-        .withMultipliedAlpha(button.isEnabled() ? 1.0f : 0.5f));
+    
+}
 
-    auto yIndent = juce::jmin(4, button.proportionOfHeight(0.3f));
-    auto cornerSize = juce::jmin(button.getHeight(), button.getWidth()) / 2;
+//PLASButtonLookAndFeel
 
-    auto fontHeight = juce::roundToInt(font.getHeight() * 0.6f);
-    auto leftIndent = juce::jmin(fontHeight, 2 + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
-    auto rightIndent = juce::jmin(fontHeight, 2 + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
-    auto textWidth = button.getWidth() - leftIndent - rightIndent;
+PLASButtonLookAndFeel::PLASButtonLookAndFeel(juce::Image abuttonOnN,
+                      juce::Image abuttonOffN,
+                      juce::Image abuttonOnD,
+                      juce::Image abuttonOffD,
+                      bool destroy){
+    buttonOnN = abuttonOnN;
+    buttonOffN = abuttonOffN;
+    buttonOnD = abuttonOnD;
+    buttonOffD = abuttonOffD; 
+    destroy = destroy;
+}
 
-    if (textWidth > 0)
-        g.drawFittedText(button.getButtonText(),
-            leftIndent, yIndent, textWidth, button.getHeight() - yIndent * 2,
-            juce::Justification::centred, 2);
-            */
+
+void PLASButtonLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
+{
+    juce::Image btn = juce::Image();
+    if(!destroy) {
+        if (button.getToggleState()) {
+            btn = buttonOnN;
+        }
+        else {
+            btn = buttonOffN;
+        }
+    } else {
+        if (button.getToggleState()) {
+            btn = buttonOnD;
+        }
+        else {
+            btn = buttonOffD;
+        }
+    }
+    float btDimW = (float)button.getWidth();
+    float btDimH = (float)button.getHeight();
+    float frameDimW = (float)btn.getWidth();
+    float frameDimH = (float)btn.getHeight();
+    
+    if ((btDimW/frameDimW) <= ( btDimH / frameDimH)) {
+        btDimH = (btDimW / frameDimW) * frameDimH;
+        btDimW = (btDimW / frameDimW) * frameDimW;
+    }
+    else {
+        btDimH = (btDimH / frameDimH) * frameDimH;
+        btDimW = (btDimH / frameDimH) * frameDimW;
+    }
+    int centerX = (button.getWidth()) / 2;
+    int centerY = (button.getHeight()) / 2;
+    int sX = centerX - (btDimW / 2);
+    int sY = centerY - (btDimH / 2);
+    g.drawImage(btn, sX, sY, btDimW, btDimH, 0, 0, frameDimW, frameDimH);
+    
+}
+
+
+PLASButLinkLookAndFeel::PLASButLinkLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::Link_Button_png, BinaryData::Link_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Unlink_Button_png, BinaryData::Unlink_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_Link_Button_png, BinaryData::Destroyed_Link_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Unlink_Button_png, BinaryData::Unlink_Button_pngSize), false)
+{
+}
+PLASButOnLookAndFeel::PLASButOnLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_Button_png, BinaryData::ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_Button_png, BinaryData::Destroyed_ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize),  false)
+{
+}
+PLASButBPLookAndFeel::PLASButBPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_BP_Button_png, BinaryData::ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_BP_Button_png, BinaryData::Destroyed_ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_BP_Button_pngSize),  false)
+{
+}
+PLASButLPLookAndFeel::PLASButLPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_LP_Button_png, BinaryData::ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_LP_Button_png, BinaryData::Destroyed_ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize),  false)
+{
+}
+PLASButHPLookAndFeel::PLASButHPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_HP_Button_png, BinaryData::ON_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_HP_Button_png, BinaryData::OFF_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_HP_Button_png, BinaryData::Destroyed_ON_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_HP_Button_png, BinaryData::OFF_HP_Button_pngSize),  false)
+{
+}
+PLASButMSLookAndFeel::PLASButMSLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::MS_Button_png, BinaryData::MS_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_MS_Button_png, BinaryData::OFF_MS_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_MS_Button_png, BinaryData::Destroyed_MS_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_MS_Button_png, BinaryData::OFF_MS_Button_pngSize),  false)
+{
+}
+PLASButLRLookAndFeel::PLASButLRLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::LR_Button_png, BinaryData::LR_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LR_Button_png, BinaryData::OFF_LR_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_LR_Button_png, BinaryData::Destroyed_LR_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LR_Button_png, BinaryData::OFF_LR_Button_pngSize),  false)
+{
 }

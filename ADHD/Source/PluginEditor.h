@@ -41,7 +41,19 @@ private:
     juce::ToggleButton MSButton;
 
     juce::ToggleButton linkButton;
-
+    
+    //LOOK AND FEEL
+    
+    PLASBigKnobLookFeel bkLeF {};
+    PLASLittleKnobLookFeel lkLeF {};
+    PLASDestroyButtonLookAndFeel dbLeF {};
+    PLASButLinkLookAndFeel blLeF {};
+    PLASButOnLookAndFeel bOLeF {};
+    PLASButLPLookAndFeel bLPLeF {};
+    PLASButBPLookAndFeel bBPLeF {};
+    PLASButHPLookAndFeel bHPLeF {};
+    PLASButMSLookAndFeel bMSLeF {};
+    PLASButLRLookAndFeel bLRLeF {};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADHDAudioProcessorEditor);
 };

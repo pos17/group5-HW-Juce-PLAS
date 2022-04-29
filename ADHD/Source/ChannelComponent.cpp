@@ -233,3 +233,30 @@ juce::ToggleButton* ChannelComponent::getFilterHP()
 {
     return &filterHP;
 }
+
+
+void ChannelComponent::setBKLeF(juce::LookAndFeel *lef){
+    inGainDial.setLookAndFeel(lef);
+    outGainDial.setLookAndFeel(lef);
+    
+}
+void ChannelComponent::setLKLeF(juce::LookAndFeel *lef){
+    freqDial.setLookAndFeel(lef);
+    qFactorDial.setLookAndFeel(lef);
+    toneDial.setLookAndFeel(lef);
+    drywetDial.setLookAndFeel(lef);
+    
+}
+void ChannelComponent::setOnButtonsLeF(juce::LookAndFeel *lef){
+    channelOn.setLookAndFeel(lef);
+    filterOn.setLookAndFeel(lef);
+}
+void ChannelComponent::setLPButtonsLeF(juce::LookAndFeel* lef) {
+    filterLP.setLookAndFeel(lef);
+}
+void ChannelComponent::setBPButtonsLeF(juce::LookAndFeel* lef){
+    filterBP.setLookAndFeel(lef);
+}
+void ChannelComponent::setHPButtonsLeF(juce::LookAndFeel* lef){
+    filterHP.setLookAndFeel(lef);
+}

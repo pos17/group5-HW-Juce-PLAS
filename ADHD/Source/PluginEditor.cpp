@@ -18,14 +18,32 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     destroyDial.setRange(0.0, 1.0, 1. / 128);
     destroyDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     destroyDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-
+    destroyDial.setLookAndFeel(&lkLeF);
     LRButton.setToggleState(true, false);
     linkButton.setToggleState(true, false);
+    
+    destroyButton.setLookAndFeel(&dbLeF);
+    linkButton.setLookAndFeel(&blLeF);
+    MSButton.setLookAndFeel(&bMSLeF);
+    LRButton.setLookAndFeel(&bLRLeF);
+    
 
     //ADD AND MAKE VISIBLE
     addAndMakeVisible(channelL);
     addAndMakeVisible(channelR);
-
+    channelL.setBKLeF(&bkLeF);
+    channelR.setBKLeF(&bkLeF);
+    channelL.setLKLeF(&lkLeF);
+    channelR.setLKLeF(&lkLeF);
+    channelL.setOnButtonsLeF(&bOLeF);
+    channelR.setOnButtonsLeF(&bOLeF);
+    channelL.setLPButtonsLeF(&bLPLeF);
+    channelR.setLPButtonsLeF(&bLPLeF);
+    channelL.setBPButtonsLeF(&bBPLeF);
+    channelR.setBPButtonsLeF(&bBPLeF);
+    channelL.setHPButtonsLeF(&bHPLeF);
+    channelR.setHPButtonsLeF(&bHPLeF);
+    
     addAndMakeVisible(destroyDial);
    addAndMakeVisible(destroyButton);
    addAndMakeVisible(LRButton);

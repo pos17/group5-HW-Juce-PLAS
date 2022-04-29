@@ -23,7 +23,7 @@ public:
 
     void paint(juce::Graphics&) override;
     void resized() override;
-    void ChannelComponent::sliderValueChanged(juce::Slider* slider);
+    void sliderValueChanged(juce::Slider* slider) override;
     
     // GETTERS
     juce::Slider* getFreqDial();
@@ -38,7 +38,16 @@ public:
     juce::ToggleButton* getFilterLP();
     juce::ToggleButton* getFilterBP();
     juce::ToggleButton* getFilterHP();
-
+    
+    //LOOKANDFEEL
+    void setBKLeF(juce::LookAndFeel* lef);
+    void setLKLeF(juce::LookAndFeel* lef);
+    void setOnButtonsLeF(juce::LookAndFeel* lef);
+    void setLPButtonsLeF(juce::LookAndFeel* lef);
+    void setBPButtonsLeF(juce::LookAndFeel* lef);
+    void setHPButtonsLeF(juce::LookAndFeel* lef);
+    
+    
 private:
     // Dials
     juce::Slider freqDial;
