@@ -11,48 +11,68 @@
 #include <JuceHeader.h>
 #include "ChannelComponent.h"
 
+
 //==============================================================================
 ChannelComponent::ChannelComponent()
-{
+{   
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     freqDial.setRange(0.0, 1.0, 1. / 128);
     freqDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     freqDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    freqDial.setValue(0.5);
 
     qFactorDial.setRange(0.0, 1.0, 1. / 128);
     qFactorDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     qFactorDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    qFactorDial.setValue(0.5);
+    qFactorDial.setDoubleClickReturnValue(true, 0.5);
 
     inGainDial.setRange(0.0, 1.0, 1. / 128);
     inGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     inGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    inGainDial.setValue(0.5);
 
     toneDial.setRange(0.0, 1.0, 1. / 128);
     toneDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     toneDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    toneDial.setValue(0.5);
 
     outGainDial.setRange(0.0, 1.0, 1. / 128);
     outGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     outGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    outGainDial.setValue(0.5);
 
     drywetDial.setRange(0.0, 1.0, 1. / 128);
     drywetDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     drywetDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    drywetDial.setValue(1);
 
     channelOn.setToggleState(true, false);
     filterOn.setToggleState(true, false);
 
+    //NAMES
+    freqDial.setName("freqDial");
+    qFactorDial.setName("qFactorDial");
+    inGainDial.setName("inGainDial");
+    toneDial.setName("toneDial");
+    outGainDial.setName("outGainDial");
+    drywetDial.setName("drywetDial");
+
+    channelOn.setName("channelOn");
+    filterOn.setName("filterOn");
+    filterLP.setName("filterLP");
+    filterBP.setName("filterBP");
+    filterHP.setName("filterHP");
+
     //ADD AND MAKE VISIBLE
     addAndMakeVisible(freqDial);
+    addAndMakeVisible(qFactorDial);
 
     addAndMakeVisible(inGainDial);
     addAndMakeVisible(outGainDial);
-    addAndMakeVisible(qFactorDial);
     addAndMakeVisible(toneDial);
-
     addAndMakeVisible(drywetDial);
-
 
     addAndMakeVisible(channelOn);
 
@@ -60,6 +80,15 @@ ChannelComponent::ChannelComponent()
     addAndMakeVisible(filterLP);
     addAndMakeVisible(filterBP);
     addAndMakeVisible(filterHP);
+
+    // Listeners
+    freqDial.addListener(this);
+    qFactorDial.addListener(this);
+    inGainDial.addListener(this);
+    toneDial.addListener(this);
+    outGainDial.addListener(this);
+    drywetDial.addListener(this);
+
 }
 
 ChannelComponent::~ChannelComponent()
@@ -139,4 +168,68 @@ void ChannelComponent::resized()
     filterLP.setBounds(filterLPArea);
     filterBP.setBounds(filterBPArea);
     filterHP.setBounds(filterHPArea);
+}
+
+void ChannelComponent::sliderValueChanged(juce::Slider* slider)
+{   
+    /*if (slider == &freqDial) { DBG("freqDial: " << freqDial.getValue()); };
+    if (slider == &qFactorDial) { DBG("qFactorDial: " << qFactorDial.getValue()); };
+    if (slider == &inGainDial) { DBG("inGainDial: " << inGainDial.getValue()); };
+    if (slider == &outGainDial) { DBG("outGainDial: " << outGainDial.getValue()); };
+    if (slider == &drywetDial) { DBG("drywetDial: " << drywetDial.getValue()); };*/
+}
+
+juce::Slider* ChannelComponent::getFreqDial()
+{
+    return &freqDial;
+}
+
+juce::Slider* ChannelComponent::getQFactorDial()
+{
+    return &qFactorDial;
+}
+
+juce::Slider* ChannelComponent::getInGainDial()
+{
+    return &inGainDial;
+}
+
+juce::Slider* ChannelComponent::getOutGainDial()
+{
+    return &outGainDial;
+}
+
+juce::Slider* ChannelComponent::getToneDial()
+{
+    return &toneDial;
+}
+
+juce::Slider* ChannelComponent::getDryWetDial()
+{
+    return &drywetDial;
+}
+
+juce::ToggleButton* ChannelComponent::getChannelOn()
+{
+    return &channelOn;
+}
+
+juce::ToggleButton* ChannelComponent::getFilterOn()
+{
+    return &filterOn;
+}
+
+juce::ToggleButton* ChannelComponent::getFilterLP()
+{
+    return &filterLP;
+}
+
+juce::ToggleButton* ChannelComponent::getFilterBP()
+{
+    return &filterBP;
+}
+
+juce::ToggleButton* ChannelComponent::getFilterHP()
+{
+    return &filterHP;
 }

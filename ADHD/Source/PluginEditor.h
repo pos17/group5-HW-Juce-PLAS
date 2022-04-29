@@ -15,7 +15,7 @@
 //==============================================================================
 /**
 */
-class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor
+class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor//, public juce::Slider::Listener
 {
 public:
     ADHDAudioProcessorEditor (ADHDAudioProcessor&);
@@ -28,7 +28,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    ADHDAudioProcessor& audioProcessor;
+    ADHDAudioProcessor& audioProcessor; 
 
     ChannelComponent channelL;
     ChannelComponent channelR;
@@ -37,6 +37,8 @@ private:
     juce::ToggleButton destroyButton;
     juce::ToggleButton LRButton;
     juce::ToggleButton MSButton;
+
+    juce::ToggleButton linkButton;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADHDAudioProcessorEditor);
