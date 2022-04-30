@@ -48,8 +48,8 @@ ChannelComponent::ChannelComponent()
     drywetDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     drywetDial.setValue(1);
 
-    channelOn.setToggleState(true, false);
-    filterOn.setToggleState(true, false);
+    //channelOn.setToggleState(true, false);
+    //filterOn.setToggleState(true, false);
 
     //NAMES
     freqDial.setName("freqDial");
@@ -61,10 +61,21 @@ ChannelComponent::ChannelComponent()
 
     channelOn.setName("channelOn");
     filterOn.setName("filterOn");
+    filterList.setName("filterList");
+    
+    filterList.addItem("LowPass", 1);
+    filterList.addItem("BandPass", 2);
+    filterList.addItem("HighPass", 3);
+    
+    
     filterLP.setName("filterLP");
     filterBP.setName("filterBP");
     filterHP.setName("filterHP");
-
+    
+    filterLP.setRadioGroupId(Filters);
+    filterBP.setRadioGroupId(Filters);
+    filterHP.setRadioGroupId(Filters);
+     
     //ADD AND MAKE VISIBLE
     addAndMakeVisible(freqDial);
     addAndMakeVisible(qFactorDial);
@@ -77,10 +88,12 @@ ChannelComponent::ChannelComponent()
     addAndMakeVisible(channelOn);
 
     addAndMakeVisible(filterOn);
+    
     addAndMakeVisible(filterLP);
     addAndMakeVisible(filterBP);
     addAndMakeVisible(filterHP);
-
+    
+    //addAndMakeVisible(filterList);
     // Listeners
     freqDial.addListener(this);
     qFactorDial.addListener(this);
@@ -104,9 +117,12 @@ void ChannelComponent::paint (juce::Graphics& g)
     //Buttons Bounds
     juce::Rectangle<int> channelOnArea(20, 65, buttonDimension, buttonDimension);
     juce::Rectangle<int> filterOnArea(123, 20, buttonDimension, buttonDimension);
+    
     juce::Rectangle<int> filterLPArea(157, 20, buttonDimension, buttonDimension);
     juce::Rectangle<int> filterBPArea(193, 20, buttonDimension, buttonDimension);
-    juce::Rectangle<int> filterHPArea(227, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterHPArea(229, 20, buttonDimension, buttonDimension);
+     
+    juce::Rectangle<int> filtersArea(157, 20, (3*buttonDimension)+(2*6), buttonDimension);
 
     //Dials Bounds
     juce::Rectangle<int> freqDialArea(109, 62, secondaryDialDimension, secondaryDialDimension);
@@ -128,6 +144,7 @@ void ChannelComponent::paint (juce::Graphics& g)
     g.drawRect(filterLPArea);
     g.drawRect(filterBPArea);
     g.drawRect(filterHPArea);
+    g.drawRect(filtersArea);
     g.drawRect(freqDialArea);
     g.drawRect(qFactorDialArea);
 }
@@ -143,7 +160,8 @@ void ChannelComponent::resized()
     juce::Rectangle<int> filterOnArea(123, 20, buttonDimension, buttonDimension);
     juce::Rectangle<int> filterLPArea(157, 20, buttonDimension, buttonDimension);
     juce::Rectangle<int> filterBPArea(193, 20, buttonDimension, buttonDimension);
-    juce::Rectangle<int> filterHPArea(227, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filterHPArea(229, 20, buttonDimension, buttonDimension);
+    juce::Rectangle<int> filtersArea(157, 20, (3*buttonDimension)+(2*6), buttonDimension);
 
     //Dials Bounds
     juce::Rectangle<int> freqDialArea(109, 62, secondaryDialDimension, secondaryDialDimension);
@@ -165,9 +183,12 @@ void ChannelComponent::resized()
 
     channelOn.setBounds(channelOnArea);
     filterOn.setBounds(filterOnArea);
+    
     filterLP.setBounds(filterLPArea);
     filterBP.setBounds(filterBPArea);
     filterHP.setBounds(filterHPArea);
+    
+    filterList.setBounds(filtersArea);
 }
 
 void ChannelComponent::sliderValueChanged(juce::Slider* slider)
@@ -234,6 +255,10 @@ juce::ToggleButton* ChannelComponent::getFilterHP()
     return &filterHP;
 }
 
+juce::ComboBox* ChannelComponent::getFilterList()
+{
+    return &filterList;
+}
 
 void ChannelComponent::setBKLeF(juce::LookAndFeel *lef){
     inGainDial.setLookAndFeel(lef);
@@ -251,6 +276,7 @@ void ChannelComponent::setOnButtonsLeF(juce::LookAndFeel *lef){
     channelOn.setLookAndFeel(lef);
     filterOn.setLookAndFeel(lef);
 }
+
 void ChannelComponent::setLPButtonsLeF(juce::LookAndFeel* lef) {
     filterLP.setLookAndFeel(lef);
 }
@@ -259,4 +285,9 @@ void ChannelComponent::setBPButtonsLeF(juce::LookAndFeel* lef){
 }
 void ChannelComponent::setHPButtonsLeF(juce::LookAndFeel* lef){
     filterHP.setLookAndFeel(lef);
+}
+ 
+
+void ChannelComponent::setFilterListLeF(juce::LookAndFeel* lef){
+    filterList.setLookAndFeel(lef);
 }

@@ -64,7 +64,8 @@ public:
     
 private:
     int distType {0};
-    bool bypass{ false };
+    bool channelOnL{ true };
+    bool channelOnR{ true };
     bool isMidSide{ false };
     float gain[2]{ 1.0,1.0 };
     float dryWet[2]{1.0,1.0};

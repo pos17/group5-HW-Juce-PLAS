@@ -18,6 +18,10 @@
 class ChannelComponent : public juce::Component, public juce::Slider::Listener
 {
 public:
+    enum RadioButtonIds
+    {
+        Filters = 1001
+    };
     ChannelComponent();
     ~ChannelComponent() override;
 
@@ -35,18 +39,22 @@ public:
 
     juce::ToggleButton* getChannelOn();
     juce::ToggleButton* getFilterOn();
+    
     juce::ToggleButton* getFilterLP();
     juce::ToggleButton* getFilterBP();
     juce::ToggleButton* getFilterHP();
     
+    juce::ComboBox* getFilterList();
     //LOOKANDFEEL
     void setBKLeF(juce::LookAndFeel* lef);
     void setLKLeF(juce::LookAndFeel* lef);
     void setOnButtonsLeF(juce::LookAndFeel* lef);
+    
     void setLPButtonsLeF(juce::LookAndFeel* lef);
     void setBPButtonsLeF(juce::LookAndFeel* lef);
     void setHPButtonsLeF(juce::LookAndFeel* lef);
     
+    void setFilterListLeF(juce::LookAndFeel* lef);
     
 private:
     // Dials
@@ -63,9 +71,12 @@ private:
     juce::ToggleButton channelOn;
 
     juce::ToggleButton filterOn;
+    
     juce::ToggleButton filterLP;
     juce::ToggleButton filterBP;
     juce::ToggleButton filterHP;
-
+    
+    juce::ComboBox filterList;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChannelComponent)
 };

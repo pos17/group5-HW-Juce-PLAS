@@ -19,14 +19,44 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     destroyDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     destroyDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     destroyDial.setLookAndFeel(&lkLeF);
-    LRButton.setToggleState(true, false);
-    linkButton.setToggleState(true, false);
+    //LRButton.setToggleState(true, false);
+    //linkButton.setToggleState(true, false);
     
+    //ATTACHMENTS
+    msAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "MIDSIDE", msLr));
+    gainLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelL.getInGainDial()));
+    gainRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelR.getInGainDial()));
+    volumeLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMEL", *channelL.getOutGainDial()));
+    volumeRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMER", *channelR.getOutGainDial()));
+    dryWetLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETL", *channelL.getDryWetDial()));
+    dryWetRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETR", *channelR.getDryWetDial()));
+    freqLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQL", *channelL.getFreqDial()));
+    freqRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQR", *channelR.getFreqDial()));
+    qLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QL", *channelL.getQFactorDial()));
+    qRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QR", *channelR.getQFactorDial()));
+    
+    eqLPLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPL", *channelL.getFilterLP()));
+    eqBPLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPL", *channelL.getFilterBP()));
+    eqHPLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPL", *channelL.getFilterHP()));
+     
+    filterListLAttachment.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (audioProcessor.treeState, "EQSELECTL", *channelL.getFilterList()));
+    filterListRAttachment.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (audioProcessor.treeState, "EQSELECTR", *channelR.getFilterList()));
+    
+    eqLPRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPR", *channelR.getFilterLP()));
+    eqBPRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPR", *channelR.getFilterBP()));
+    eqHPRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPR", *channelR.getFilterHP()));
+    
+    eqOnLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONL", *channelL.getFilterOn()));
+    eqOnRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONR", *channelR.getFilterOn()));
+    channelOnLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONL", *channelL.getChannelOn()));
+    channelOnRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONR", *channelR.getChannelOn()));
+
+
     destroyButton.setLookAndFeel(&dbLeF);
     linkButton.setLookAndFeel(&blLeF);
-    MSButton.setLookAndFeel(&bMSLeF);
-    LRButton.setLookAndFeel(&bLRLeF);
-    
+    //MSButton.setLookAndFeel(&bMSLeF);
+    //LRButton.setLookAndFeel(&bLRLeF);
+    msLr.setLookAndFeel(&bMSLRLeF);
 
     //ADD AND MAKE VISIBLE
     addAndMakeVisible(channelL);
@@ -45,9 +75,11 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     channelR.setHPButtonsLeF(&bHPLeF);
     
     addAndMakeVisible(destroyDial);
-   addAndMakeVisible(destroyButton);
-   addAndMakeVisible(LRButton);
-    addAndMakeVisible(MSButton);
+    addAndMakeVisible(destroyButton);
+    //addAndMakeVisible(LRButton);
+    //addAndMakeVisible(MSButton);
+    addAndMakeVisible(msLr);
+    
     addAndMakeVisible(linkButton);
 
     //LISTENERS
@@ -103,9 +135,11 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Rectangle<int> destroyButtonArea(20 + xOffset, 270 + yOffset, 100, 60);
     juce::Rectangle<int> destroyDialArea(30 + xOffset, 180 + yOffset, 80, 80);
 
-    juce::Rectangle<int> LRButtonArea(30 + xOffset, 20 + yOffset, 30, 30);
-    juce::Rectangle<int> MSButtonArea(78 + xOffset, 20 + yOffset, 30, 30);
-
+    //juce::Rectangle<int> LRButtonArea(30 + xOffset, 20 + yOffset, 30, 30);
+    //juce::Rectangle<int> MSButtonArea(78 + xOffset, 20 + yOffset, 30, 30);
+    juce::Rectangle<int> msLrArea(30 + xOffset, 20 + yOffset, 78, 30);
+    
+    
     juce::Rectangle<int> inMeterArea(20 + xOffset, 60 + yOffset, 40, 120);
     juce::Rectangle<int> outMeterArea(80 + xOffset, 60 + yOffset, 40, 120);
     /**************************************/
@@ -118,8 +152,13 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour( juce::Colours::beige);
     g.drawRect(destroyButtonArea);
     g.drawRect(destroyDialArea);
-    g.drawRect(LRButtonArea);
-    g.drawRect(MSButtonArea);
+    
+    
+    //g.drawRect(LRButtonArea);
+    //g.drawRect(MSButtonArea);
+    g.drawRect(msLrArea);
+    
+    
     g.drawRect(inMeterArea);
     g.drawRect(outMeterArea);
 
@@ -146,9 +185,9 @@ void ADHDAudioProcessorEditor::resized()
     juce::Rectangle<int> destroyButtonArea(20 + xOffset, 270 + yOffset, 100, 60);
     juce::Rectangle<int> destroyDialArea(30 + xOffset, 180 + yOffset, 80, 80);
 
-    juce::Rectangle<int> LRButtonArea(30 + xOffset, 20 + yOffset, 30, 30);
-    juce::Rectangle<int> MSButtonArea(78 + xOffset, 20 + yOffset, 30, 30);
-    
+    //juce::Rectangle<int> LRButtonArea(30 + xOffset, 20 + yOffset, 30, 30);
+    //juce::Rectangle<int> MSButtonArea(78 + xOffset, 20 + yOffset, 30, 30);
+    juce::Rectangle<int> msLrArea(30 + xOffset, 20 + yOffset, 78, 30);
     // Setting Bounds
     linkButton.setBounds(linkButtonArea);
 
@@ -157,6 +196,7 @@ void ADHDAudioProcessorEditor::resized()
 
     destroyButton.setBounds(destroyButtonArea);
     destroyDial.setBounds(destroyDialArea);
-    LRButton.setBounds(LRButtonArea);
-    MSButton.setBounds(MSButtonArea);
+    //LRButton.setBounds(LRButtonArea);
+    //MSButton.setBounds(MSButtonArea);
+    msLr.setBounds(msLrArea);
 }
