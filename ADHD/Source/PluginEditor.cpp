@@ -22,20 +22,6 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     //LRButton.setToggleState(true, false);
     //linkButton.setToggleState(true, false);
     
-    destroyButton.onClick = [this] {
-        bool state = destroyButton.getToggleState();
-        bkLeF.setDestroy(state);
-        lkLeF.setDestroy(state);
-        blLeF.setDestroy(state);
-        bOLeF.setDestroy(state);
-        bLPLeF.setDestroy(state);
-        bBPLeF.setDestroy(state);
-        bHPLeF.setDestroy(state);
-        bMSLRLeF.setDestroy(state);
-        setVisible(false);
-        setVisible(true);
-    };
-    
     //ATTACHMENTS
     msAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "MIDSIDE", msLr));
     destroyAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "DESTROY", destroyButton));
@@ -101,6 +87,31 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     //LISTENERS
     //destroyDial.addListener(this);
     
+    destroyButton.onClick = [this] {
+        bool state = destroyButton.getToggleState();
+        bkLeF.setDestroy(state);
+        lkLeF.setDestroy(state);
+        blLeF.setDestroy(state);
+        bOLeF.setDestroy(state);
+        bLPLeF.setDestroy(state);
+        bBPLeF.setDestroy(state);
+        bHPLeF.setDestroy(state);
+        bMSLRLeF.setDestroy(state);
+        setVisible(false);
+        setVisible(true);
+    };
+
+    bool state = destroyButton.getToggleState();
+    bkLeF.setDestroy(state);
+    lkLeF.setDestroy(state);
+    blLeF.setDestroy(state);
+    bOLeF.setDestroy(state);
+    bLPLeF.setDestroy(state);
+    bBPLeF.setDestroy(state);
+    bHPLeF.setDestroy(state);
+    bMSLRLeF.setDestroy(state);
+    setVisible(false);
+    setVisible(true);
 
     setSize (1000, 400);
 }
@@ -119,7 +130,7 @@ ADHDAudioProcessorEditor::~ADHDAudioProcessorEditor()
 //=============================================================================
 void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBG_png, BinaryData::GUI_definitivaBG_pngSize), 0, 0);
+    g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBGMS_png, BinaryData::GUI_definitivaBGMS_pngSize), 0, 0);
 
 
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -162,10 +173,10 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Rectangle<int> msLrArea(30 + xOffset, 20 + yOffset, 78, 30);
     
     
-    juce::Rectangle<int> inMeterArea(20 + xOffset, 60 + yOffset, 40, 120);
-    juce::Rectangle<int> outMeterArea(80 + xOffset, 60 + yOffset, 40, 120);
+    juce::Rectangle<int> inMeterArea(22 + xOffset, 60 + yOffset, 38, 114);
+    juce::Rectangle<int> outMeterArea(80 + xOffset, 60 + yOffset, 38, 114);
     /**************************************/
-    g.setColour(juce::Colours::red);
+    /*g.setColour(juce::Colours::red);
     g.drawRect(channelAreaL);
     g.drawRect(channelAreaR);
     g.drawRect(destroySectionArea);
@@ -173,12 +184,12 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour( juce::Colours::beige);
     g.drawRect(destroyButtonArea);
-    g.drawRect(destroyDialArea);
+    g.drawRect(destroyDialArea);*/
     
     
     //g.drawRect(LRButtonArea);
     //g.drawRect(MSButtonArea);
-    g.drawRect(msLrArea);
+    //g.drawRect(msLrArea);
     
     
     g.drawRect(inMeterArea);

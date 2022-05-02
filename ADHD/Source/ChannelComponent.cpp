@@ -133,7 +133,7 @@ void ChannelComponent::paint (juce::Graphics& g)
     juce::Rectangle<int> outGainDialArea(524, 20, primaryDialDimension, primaryDialDimension);
     juce::Rectangle<int> drywetDialArea(660, 40, secondaryDialDimension, secondaryDialDimension);
 
-    g.setColour(juce::Colours::aquamarine);
+    /*g.setColour(juce::Colours::aquamarine);
     g.drawRect(inGainDialArea);
     g.drawRect(outGainDialArea);
     g.drawRect(toneDialArea);
@@ -147,7 +147,7 @@ void ChannelComponent::paint (juce::Graphics& g)
     g.drawRect(filterHPArea);
     g.drawRect(filtersArea);
     g.drawRect(freqDialArea);
-    g.drawRect(qFactorDialArea);
+    g.drawRect(qFactorDialArea);*/
 }
 
 void ChannelComponent::resized()

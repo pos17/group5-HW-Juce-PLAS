@@ -68,9 +68,9 @@ private:
     bool channelOnR{ true };
     bool isMidSide{ false };
     bool destroy {false};
-    float gain[2]{ 1.0,1.0 };
-    float dryWet[2]{1.0,1.0};
-    float volume[2]{ 1.0,1.0 };
+    float gain[2]{ 1.0, 1.0 };
+    float dryWet[2]{ 1.0, 1.0 };
+    float volume[2]{ 1.0, 1.0 };
     bool eqOn[2]{ false,false };
     int eqSelect[2]{ 0,0 };
     float eqQ[2]{ 0.1f,0.1f };

@@ -268,6 +268,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             float dataMid = dataL[sample] + dataR[sample];
             float dataSide = dataL[sample] - dataR[sample];
             
+            // giusto?
             dataL[sample] = dataMid * sqrt(2) / 2;
             dataR[sample] = dataSide * sqrt(2) / 2;
             
@@ -385,8 +386,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             float dataL = dataMid[sample] + dataSide[sample];
             float dataR = dataMid[sample] - dataSide[sample];
             
-            dataMid[sample] = dataL;
-            dataSide[sample] = dataR;
+            dataMid[sample] = dataL / sqrt(2);
+            dataSide[sample] = dataR / sqrt(2);
             
             
         }
@@ -528,9 +529,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto destroyVal = std::make_unique<juce::AudioParameterBool>("DESTROY", "destroy",false);
     parameters.push_back(std::move(destroyVal));
     
-    auto gainValL = std::make_unique<juce::AudioParameterFloat>("GAINL", "Drive Gain L/MID", 1.0f, 20.0f, 0.0f);
+    auto gainValL = std::make_unique<juce::AudioParameterFloat>("GAINL", "Drive Gain L/MID", 1.0f, 20.0f, 10.0f);
     parameters.push_back(std::move(gainValL));
-    auto gainValR = std::make_unique<juce::AudioParameterFloat>("GAINR", "Drive Gain R/SIDE", 1.0f, 20.0f, 0.0f);
+    auto gainValR = std::make_unique<juce::AudioParameterFloat>("GAINR", "Drive Gain R/SIDE", 1.0f, 20.0f, 10.0f);
     parameters.push_back(std::move(gainValR));
     auto dryWetValL = std::make_unique<juce::AudioParameterFloat> ("DRYWETL", "Dry Wet L/MID", 0.0f, 1.0f, 1.0f);
     parameters.push_back(std::move(dryWetValL));
