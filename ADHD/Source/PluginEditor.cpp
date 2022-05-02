@@ -22,19 +22,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     //LRButton.setToggleState(true, false);
     //linkButton.setToggleState(true, false);
     
-    destroyButton.onClick = [this] {
-        bool state = destroyButton.getToggleState();
-        bkLeF.setDestroy(state);
-        lkLeF.setDestroy(state);
-        blLeF.setDestroy(state);
-        bOLeF.setDestroy(state);
-        bLPLeF.setDestroy(state);
-        bBPLeF.setDestroy(state);
-        bHPLeF.setDestroy(state);
-        bMSLRLeF.setDestroy(state);
-        setVisible(false);
-        setVisible(true);
-    };
+    
     linkButton.onClick = [this] {
         bool stateLink = linkButton.getToggleState();
         if(stateLink)
@@ -47,32 +35,32 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     linkAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "LINK", linkButton));
     msAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "MIDSIDE", msLr));
     destroyAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "DESTROY", destroyButton));
-    gainLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelL.getInGainDial()));
-    gainRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelR.getInGainDial()));
-    volumeLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMEL", *channelL.getOutGainDial()));
-    volumeRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMER", *channelR.getOutGainDial()));
-    dryWetLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETL", *channelL.getDryWetDial()));
-    dryWetRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETR", *channelR.getDryWetDial()));
-    freqLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQL", *channelL.getFreqDial()));
-    freqRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQR", *channelR.getFreqDial()));
-    qLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QL", *channelL.getQFactorDial()));
-    qRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QR", *channelR.getQFactorDial()));
+    gainLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelL.getInGainDial()));
+    gainRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelR.getInGainDial()));
+    volumeLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMEL", *channelL.getOutGainDial()));
+    volumeRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMER", *channelR.getOutGainDial()));
+    dryWetLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETL", *channelL.getDryWetDial()));
+    dryWetRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETR", *channelR.getDryWetDial()));
+    freqLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQL", *channelL.getFreqDial()));
+    freqRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQR", *channelR.getFreqDial()));
+    qLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QL", *channelL.getQFactorDial()));
+    qRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QR", *channelR.getQFactorDial()));
     
-    eqLPLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPL", *channelL.getFilterLP()));
-    eqBPLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPL", *channelL.getFilterBP()));
-    eqHPLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPL", *channelL.getFilterHP()));
+    eqLPLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPL", *channelL.getFilterLP()));
+    eqBPLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPL", *channelL.getFilterBP()));
+    eqHPLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPL", *channelL.getFilterHP()));
      
     filterListLAttachment.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (audioProcessor.treeState, "EQSELECTL", *channelL.getFilterList()));
     filterListRAttachment.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (audioProcessor.treeState, "EQSELECTR", *channelR.getFilterList()));
     
-    eqLPRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPR", *channelR.getFilterLP()));
-    eqBPRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPR", *channelR.getFilterBP()));
-    eqHPRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPR", *channelR.getFilterHP()));
+    eqLPRRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPR", *channelR.getFilterLP()));
+    eqBPRRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPR", *channelR.getFilterBP()));
+    eqHPRRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPR", *channelR.getFilterHP()));
     
-    eqOnLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONL", *channelL.getFilterOn()));
-    eqOnRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONR", *channelR.getFilterOn()));
-    channelOnLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONL", *channelL.getChannelOn()));
-    channelOnRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONR", *channelR.getChannelOn()));
+    eqOnLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONL", *channelL.getFilterOn()));
+    eqOnRRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONR", *channelR.getFilterOn()));
+    channelOnLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONL", *channelL.getChannelOn()));
+    channelOnRRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONR", *channelR.getChannelOn()));
 
 
     destroyButton.setLookAndFeel(&dbLeF);
@@ -108,7 +96,31 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
 
     //LISTENERS
     //destroyDial.addListener(this);
+    destroyButton.onClick = [this] {
+        bool state = destroyButton.getToggleState();
+        bkLeF.setDestroy(state);
+        lkLeF.setDestroy(state);
+        blLeF.setDestroy(state);
+        bOLeF.setDestroy(state);
+        bLPLeF.setDestroy(state);
+        bBPLeF.setDestroy(state);
+        bHPLeF.setDestroy(state);
+        bMSLRLeF.setDestroy(state);
+        setVisible(false);
+        setVisible(true);
+    };
     
+    bool state = destroyButton.getToggleState();
+    bkLeF.setDestroy(state);
+    lkLeF.setDestroy(state);
+    blLeF.setDestroy(state);
+    bOLeF.setDestroy(state);
+    bLPLeF.setDestroy(state);
+    bBPLeF.setDestroy(state);
+    bHPLeF.setDestroy(state);
+    bMSLRLeF.setDestroy(state);
+    setVisible(false);
+    setVisible(true);
 
     setSize (1000, 400);
 }
@@ -235,9 +247,54 @@ void ADHDAudioProcessorEditor::resized()
 void ADHDAudioProcessorEditor::setLinkedAttachments() {
     gainLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelL.getInGainDial()));
     gainRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelR.getInGainDial()));
+    
+    volumeLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMER", *channelL.getOutGainDial()));
+    volumeRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMEL", *channelR.getOutGainDial()));
+    dryWetLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETR", *channelL.getDryWetDial()));
+    dryWetRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETL", *channelR.getDryWetDial()));
+    freqLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQR", *channelL.getFreqDial()));
+    freqRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQL", *channelR.getFreqDial()));
+    qLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QR", *channelL.getQFactorDial()));
+    qRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QL", *channelR.getQFactorDial()));
+    
+    eqLPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPR", *channelL.getFilterLP()));
+    eqBPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPR", *channelL.getFilterBP()));
+    eqHPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPR", *channelL.getFilterHP()));
+    
+    eqLPRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPL", *channelR.getFilterLP()));
+    eqBPRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPL", *channelR.getFilterBP()));
+    eqHPRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPL", *channelR.getFilterHP()));
+    
+    eqOnLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONR", *channelL.getFilterOn()));
+    eqOnRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONL", *channelR.getFilterOn()));
+    channelOnLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONR", *channelL.getChannelOn()));
+    channelOnRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONL", *channelR.getChannelOn()));
+     
 }
 
 void ADHDAudioProcessorEditor::setUnlinkedAttachments() {
     gainLRAttachment.reset ();
     gainRLAttachment.reset ();
+    
+    volumeLRAttachment.reset ();
+    volumeRLAttachment.reset ();
+    dryWetLRAttachment.reset ();
+    dryWetRLAttachment.reset ();
+    freqLRAttachment.reset ();
+    freqRLAttachment.reset ();
+    qLRAttachment.reset ();
+    qRLAttachment.reset ();
+    
+    eqLPLRAttachment.reset ();
+    eqBPLRAttachment.reset ();
+    eqHPLRAttachment.reset ();
+    
+    eqLPRLAttachment.reset ();
+    eqBPRLAttachment.reset ();
+    eqHPRLAttachment.reset ();
+    
+    eqOnLRAttachment.reset ();
+    eqOnRLAttachment.reset ();
+    channelOnLRAttachment.reset ();
+    channelOnRLAttachment.reset ();
 }
