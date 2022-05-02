@@ -310,7 +310,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         if(destroy) {
             //placeholder to insert the destroy function
             dataDistL[sample] = expQuasiSim(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
-            dataR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+            dataDistR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
         } else {
             
             dataDistL[sample] = halfWaveAsDist(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
