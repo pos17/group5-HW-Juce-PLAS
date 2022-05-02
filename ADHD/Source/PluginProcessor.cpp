@@ -30,6 +30,7 @@ oversamplingModuleR(1, overSampFactor, juce::dsp::Oversampling<float>::FilterTyp
     treeState.addParameterListener("CHANNELONL", this);
     treeState.addParameterListener("CHANNELONR", this);
     
+    treeState.addParameterListener("LINK", this);
     treeState.addParameterListener("DESTROY", this);
     treeState.addParameterListener("MIDSIDE", this);
     treeState.addParameterListener("GAINL", this);
@@ -63,6 +64,8 @@ ADHDAudioProcessor::~ADHDAudioProcessor()
     treeState.removeParameterListener("CHANNELONL", this);
     treeState.removeParameterListener("CHANNELONR", this);
     
+    
+    treeState.removeParameterListener("LINK", this);
     treeState.removeParameterListener("DESTROY", this);
     treeState.removeParameterListener("MIDSIDE", this);
     treeState.removeParameterListener("GAINL", this);
@@ -318,20 +321,20 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         }
         
         /*
-        if (distType == 0) {
-            dataDistL[sample] = halfWaveAsDist(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
-            dataDistR[sample] = halfWaveAsDist(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
-        }
-        else if (distType == 1) {
-            dataDistL[sample] = expQuasiSim(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
-            dataR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
-            
-        }
-        else if (distType == 2) {
-            dataL[sample] = linearMaPoco(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
-            dataR[sample] = linearMaPoco(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
-        }
-        */
+         if (distType == 0) {
+         dataDistL[sample] = halfWaveAsDist(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+         dataDistR[sample] = halfWaveAsDist(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+         }
+         else if (distType == 1) {
+         dataDistL[sample] = expQuasiSim(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+         dataR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+         
+         }
+         else if (distType == 2) {
+         dataL[sample] = linearMaPoco(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+         dataR[sample] = linearMaPoco(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+         }
+         */
     }
     //      }
     
@@ -520,6 +523,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto bypassRVal = std::make_unique<juce::AudioParameterBool>("CHANNELONR", "channel ON R", true);
     parameters.push_back(std::move(bypassRVal));
     
+    auto linkVal = std::make_unique<juce::AudioParameterBool>("LINK", "link",false);
+    parameters.push_back(std::move(linkVal));
+    
+    
     const char* msSettingsCh[2] = { "LeftRight", "MidSide"};
     const juce::StringArray msSettings(msSettingsCh, 2);
     auto midSideVal = std::make_unique<juce::AudioParameterBool>("MIDSIDE", "MidSide",false);
@@ -528,9 +535,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto destroyVal = std::make_unique<juce::AudioParameterBool>("DESTROY", "destroy",false);
     parameters.push_back(std::move(destroyVal));
     
-    auto gainValL = std::make_unique<juce::AudioParameterFloat>("GAINL", "Drive Gain L/MID", 1.0f, 20.0f, 0.0f);
+    auto gainValL = std::make_unique<juce::AudioParameterFloat>("GAINL", "Drive Gain L/MID", 1.0f, 20.0f, 1.0f);
     parameters.push_back(std::move(gainValL));
-    auto gainValR = std::make_unique<juce::AudioParameterFloat>("GAINR", "Drive Gain R/SIDE", 1.0f, 20.0f, 0.0f);
+    auto gainValR = std::make_unique<juce::AudioParameterFloat>("GAINR", "Drive Gain R/SIDE", 1.0f, 20.0f, 1.0f);
     parameters.push_back(std::move(gainValR));
     auto dryWetValL = std::make_unique<juce::AudioParameterFloat> ("DRYWETL", "Dry Wet L/MID", 0.0f, 1.0f, 1.0f);
     parameters.push_back(std::move(dryWetValL));
@@ -591,11 +598,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
 void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue) {
     if (parameterID == "GAINL") {
         gain[0] = newValue;
-        
     }else if (parameterID == "GAINR") {
         gain[1] = newValue;
-        
-    } else if (parameterID == "DRYWETL") {
+    }else if (parameterID == "LINK") {
+        link = (bool)newValue;
+    }
+    else if (parameterID == "DRYWETL") {
         dryWet[0] = newValue;
     }
     else if (parameterID == "DRYWETR") {
@@ -603,7 +611,6 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "VOLUMEL") {
         volume[0] = newValue;
-        
     }
     else if (parameterID == "VOLUMER") {
         volume[1] = newValue;
@@ -613,7 +620,6 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "DESTROY") {
         destroy = (bool)newValue;
-        std::cout<<"destroy: "<<destroy<<"\n";
     }
     else if (parameterID == "CHANNELONL") {
         channelOnL = (bool)newValue;
@@ -648,33 +654,33 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     } else if(parameterID == "EQLPL") {
         eqSelect[0] = 0;
         updateFilters(0, eqSelect[0], eqQ[0], eqFreq[0]);
-    
+        
     }else if(parameterID == "EQBPL") {
         eqSelect[0] = 1;
         updateFilters(0, eqSelect[0], eqQ[0], eqFreq[0]);
-    
+        
     }else if(parameterID == "EQHPL") {
         eqSelect[0] = 2;
         updateFilters(0, eqSelect[0], eqQ[0], eqFreq[0]);
-    
+        
     }
     else if (parameterID == "EQSELECTR") {
         eqSelect[1] = newValue;
         updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
     }
     else if(parameterID == "EQLPR") {
-       eqSelect[1] = 0;
-       updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
-   
-   }else if(parameterID == "EQBPR") {
-       eqSelect[1] = 1;
-       updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
-   
-   }else if(parameterID == "EQHPR") {
-       eqSelect[1] = 2;
-       updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
-   
-   }
+        eqSelect[1] = 0;
+        updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
+        
+    }else if(parameterID == "EQBPR") {
+        eqSelect[1] = 1;
+        updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
+        
+    }else if(parameterID == "EQHPR") {
+        eqSelect[1] = 2;
+        updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
+        
+    }
     
     else if (parameterID == "DISTTYPE") {
         distType = newValue;

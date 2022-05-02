@@ -63,6 +63,7 @@ public:
     
     
 private:
+    bool link = false;
     int distType {0};
     bool channelOnL{ true };
     bool channelOnR{ true };

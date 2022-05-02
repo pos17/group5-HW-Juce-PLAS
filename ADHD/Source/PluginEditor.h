@@ -44,11 +44,19 @@ private:
     
     juce::ToggleButton linkButton;
     
+    void setMonoAttachments();
+    void setLinkedAttachments();
+    void setUnlinkedAttachments();
+    
     //ATTACHMENTS
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> linkAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> msAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> destroyAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLRAttachment;
+    
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainRAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainRLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeRAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryWetLAttachment;

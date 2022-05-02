@@ -35,8 +35,16 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
         setVisible(false);
         setVisible(true);
     };
-    
+    linkButton.onClick = [this] {
+        bool stateLink = linkButton.getToggleState();
+        if(stateLink)
+            setLinkedAttachments();
+        else {
+            setUnlinkedAttachments();
+        }
+    };
     //ATTACHMENTS
+    linkAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "LINK", linkButton));
     msAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "MIDSIDE", msLr));
     destroyAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "DESTROY", destroyButton));
     gainLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelL.getInGainDial()));
@@ -223,3 +231,13 @@ void ADHDAudioProcessorEditor::resized()
     msLr.setBounds(msLrArea);
 }
 
+
+void ADHDAudioProcessorEditor::setLinkedAttachments() {
+    gainLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelL.getInGainDial()));
+    gainRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelR.getInGainDial()));
+}
+
+void ADHDAudioProcessorEditor::setUnlinkedAttachments() {
+    gainLRAttachment.reset ();
+    gainRLAttachment.reset ();
+}
