@@ -130,6 +130,10 @@ PLASButtonLookAndFeel::PLASButtonLookAndFeel(juce::Image abuttonOnN,
     destroy = destroy;
 }
 
+void PLASButtonLookAndFeel::setDestroy(bool val) {
+    destroy = val;
+}
+
 
 void PLASButtonLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
@@ -177,7 +181,7 @@ PLASButLinkLookAndFeel::PLASButLinkLookAndFeel(): PLASButtonLookAndFeel(juce::Im
 PLASButOnLookAndFeel::PLASButOnLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_Button_png, BinaryData::ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_Button_png, BinaryData::Destroyed_ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize),  false)
 {
 }
-PLASButBPLookAndFeel::PLASButBPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_BP_Button_png, BinaryData::ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_BP_Button_png, BinaryData::Destroyed_ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_BP_Button_pngSize),  false)
+PLASButBPLookAndFeel::PLASButBPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_BP_Button_png, BinaryData::ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_BP_Button_png, BinaryData::Destroyed_ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize),  false)
 {
 }
 PLASButLPLookAndFeel::PLASButLPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_LP_Button_png, BinaryData::ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_LP_Button_png, BinaryData::Destroyed_ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize),  false)
@@ -200,6 +204,9 @@ PLASMSLRLookAndFeel::PLASMSLRLookAndFeel(){
     msOnD=juce::ImageCache::getFromMemory(BinaryData::Destroyed_MS_Button_png, BinaryData::Destroyed_MS_Button_pngSize);
     msOffD=juce::ImageCache::getFromMemory(BinaryData::OFF_MS_Button_png, BinaryData::OFF_MS_Button_pngSize);
     destroy = false;
+}
+void PLASMSLRLookAndFeel::setDestroy(bool val) {
+    destroy = val;
 }
 void PLASMSLRLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
@@ -267,112 +274,112 @@ void PLASMSLRLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton
     
 }
 /*
-void PLASFiltersLookAndFeel::drawComboBox     (     juce::Graphics & g     ,
-                                               int      width,
-                                               int      height,
-                                               bool      isButtonDown,
-                                               int      buttonX,
-                                               int      buttonY,
-                                               int      buttonW,
-                                               int      buttonH,
-                                               juce::ComboBox & cb
-                                               ) {
-    juce::Image btnLP;
-    juce::Image btnBP;
-    juce::Image btnHP;
-    
-    if(!destroy) {
-        if(isOn) {
-            if (cb.getSelectedId()==1) {
-                btnLP = LPOnN;
-                btnBP = BPOffN;
-                btnHP = HPOffN;
-                
-            }
-            else if (cb.getSelectedId()==2){
-                btnLP = LPOffN;
-                btnBP = BPOnN;
-                btnHP = HPOffN;
-            } else if (cb.getSelectedId()==3){
-                btnLP = LPOffN;
-                btnBP = BPOffN;
-                btnHP = HPOnN;
-            }
-            
-        } else {
-            if (cb.getSelectedId()==1) {
-                btnLP = LPOnD;
-                btnBP = BPOffD;
-                btnHP = HPOffD;
-                
-            }
-            else if (cb.getSelectedId()==2){
-                btnLP = LPOffD;
-                btnBP = BPOnD;
-                btnHP = HPOffD;
-            } else if (cb.getSelectedId()==3){
-                btnLP = LPOffD;
-                btnBP = BPOffD;
-                btnHP = HPOnD;
-            }
-        }
-        
-    } else {
-        btnLP = LPOffD;
-        btnBP = BPOffD;
-        btnHP = HPOffD;
-    
-    }
-    float stripeDimW = width;
-    float stripeDimH = height;
-    float btnLPDimW = stripeDimH;
-    float btnLPDimH = stripeDimH;
-    float btnBPDimW = stripeDimH;
-    float btnBPDimH = stripeDimH;
-    float btnHPDimW = stripeDimH;
-    float btnHPDimH = stripeDimH;
-    
-    
-    float frameMSDimW = (float)btnMS.getWidth();
-    float frameMSDimH = (float)btnMS.getHeight();
-    
-    float frameLRDimW = (float)btnLR.getWidth();
-    float frameLRDimH = (float)btnLR.getHeight();
-    
-    if ((btnMSDimW/frameMSDimW) <= ( btnMSDimH / frameMSDimH)) {
-        btnMSDimH = (btnMSDimW / frameMSDimW) * frameMSDimH;
-        btnMSDimW = (btnMSDimW / frameMSDimW) * frameMSDimW;
-    }
-    else {
-        btnMSDimH = (btnMSDimH / frameMSDimH) * frameMSDimH;
-        btnMSDimW = (btnMSDimH / frameMSDimH) * frameMSDimW;
-    }
-    
-    if ((btnLRDimW/frameLRDimW) <= ( btnLRDimH / frameLRDimH)) {
-        btnLRDimH = (btnLRDimW / frameLRDimW) * frameLRDimH;
-        btnLRDimW = (btnLRDimW / frameLRDimW) * frameLRDimW;
-    }
-    else {
-        btnLRDimH = (btnLRDimH / frameLRDimH) * frameLRDimH;
-        btnLRDimW = (btnLRDimH / frameLRDimH) * frameLRDimW;
-    }
-    //int centerX = (button.getWidth()) / 2;
-    int centerY = (button.getHeight()) / 2;
-    int sMSX = stripeDimW - btnMSDimW;
-    int sMSY = centerY - (btnMSDimH / 2);
-    int sLRX = 0;
-    int sLRY = centerY - (btnLRDimH / 2);
-    
-    g.drawImage(btnLR, sLRX, sLRY, btnLRDimW, btnLRDimH, 0, 0, frameLRDimW, frameLRDimH);
-    g.drawImage(btnMS, sMSX, sMSY, btnMSDimW, btnMSDimH, 0, 0, frameMSDimW, frameMSDimH);
-    
-    
-}
-    
-    void PLASFiltersLookAndFeel::setOn(bool on){
-        isOn=on;
-    }
-    void PLASFiltersLookAndFeel::setDestroy(bool val){
-        destroy = val;
-    }
-*/
+ void PLASFiltersLookAndFeel::drawComboBox     (     juce::Graphics & g     ,
+ int      width,
+ int      height,
+ bool      isButtonDown,
+ int      buttonX,
+ int      buttonY,
+ int      buttonW,
+ int      buttonH,
+ juce::ComboBox & cb
+ ) {
+ juce::Image btnLP;
+ juce::Image btnBP;
+ juce::Image btnHP;
+ 
+ if(!destroy) {
+ if(isOn) {
+ if (cb.getSelectedId()==1) {
+ btnLP = LPOnN;
+ btnBP = BPOffN;
+ btnHP = HPOffN;
+ 
+ }
+ else if (cb.getSelectedId()==2){
+ btnLP = LPOffN;
+ btnBP = BPOnN;
+ btnHP = HPOffN;
+ } else if (cb.getSelectedId()==3){
+ btnLP = LPOffN;
+ btnBP = BPOffN;
+ btnHP = HPOnN;
+ }
+ 
+ } else {
+ if (cb.getSelectedId()==1) {
+ btnLP = LPOnD;
+ btnBP = BPOffD;
+ btnHP = HPOffD;
+ 
+ }
+ else if (cb.getSelectedId()==2){
+ btnLP = LPOffD;
+ btnBP = BPOnD;
+ btnHP = HPOffD;
+ } else if (cb.getSelectedId()==3){
+ btnLP = LPOffD;
+ btnBP = BPOffD;
+ btnHP = HPOnD;
+ }
+ }
+ 
+ } else {
+ btnLP = LPOffD;
+ btnBP = BPOffD;
+ btnHP = HPOffD;
+ 
+ }
+ float stripeDimW = width;
+ float stripeDimH = height;
+ float btnLPDimW = stripeDimH;
+ float btnLPDimH = stripeDimH;
+ float btnBPDimW = stripeDimH;
+ float btnBPDimH = stripeDimH;
+ float btnHPDimW = stripeDimH;
+ float btnHPDimH = stripeDimH;
+ 
+ 
+ float frameMSDimW = (float)btnMS.getWidth();
+ float frameMSDimH = (float)btnMS.getHeight();
+ 
+ float frameLRDimW = (float)btnLR.getWidth();
+ float frameLRDimH = (float)btnLR.getHeight();
+ 
+ if ((btnMSDimW/frameMSDimW) <= ( btnMSDimH / frameMSDimH)) {
+ btnMSDimH = (btnMSDimW / frameMSDimW) * frameMSDimH;
+ btnMSDimW = (btnMSDimW / frameMSDimW) * frameMSDimW;
+ }
+ else {
+ btnMSDimH = (btnMSDimH / frameMSDimH) * frameMSDimH;
+ btnMSDimW = (btnMSDimH / frameMSDimH) * frameMSDimW;
+ }
+ 
+ if ((btnLRDimW/frameLRDimW) <= ( btnLRDimH / frameLRDimH)) {
+ btnLRDimH = (btnLRDimW / frameLRDimW) * frameLRDimH;
+ btnLRDimW = (btnLRDimW / frameLRDimW) * frameLRDimW;
+ }
+ else {
+ btnLRDimH = (btnLRDimH / frameLRDimH) * frameLRDimH;
+ btnLRDimW = (btnLRDimH / frameLRDimH) * frameLRDimW;
+ }
+ //int centerX = (button.getWidth()) / 2;
+ int centerY = (button.getHeight()) / 2;
+ int sMSX = stripeDimW - btnMSDimW;
+ int sMSY = centerY - (btnMSDimH / 2);
+ int sLRX = 0;
+ int sLRY = centerY - (btnLRDimH / 2);
+ 
+ g.drawImage(btnLR, sLRX, sLRY, btnLRDimW, btnLRDimH, 0, 0, frameLRDimW, frameLRDimH);
+ g.drawImage(btnMS, sMSX, sMSY, btnMSDimW, btnMSDimH, 0, 0, frameMSDimW, frameMSDimH);
+ 
+ 
+ }
+ 
+ void PLASFiltersLookAndFeel::setOn(bool on){
+ isOn=on;
+ }
+ void PLASFiltersLookAndFeel::setDestroy(bool val){
+ destroy = val;
+ }
+ */

@@ -22,8 +22,23 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     //LRButton.setToggleState(true, false);
     //linkButton.setToggleState(true, false);
     
+    destroyButton.onClick = [this] {
+        bool state = destroyButton.getToggleState();
+        bkLeF.setDestroy(state);
+        lkLeF.setDestroy(state);
+        blLeF.setDestroy(state);
+        bOLeF.setDestroy(state);
+        bLPLeF.setDestroy(state);
+        bBPLeF.setDestroy(state);
+        bHPLeF.setDestroy(state);
+        bMSLRLeF.setDestroy(state);
+        setVisible(false);
+        setVisible(true);
+    };
+    
     //ATTACHMENTS
     msAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "MIDSIDE", msLr));
+    destroyAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "DESTROY", destroyButton));
     gainLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelL.getInGainDial()));
     gainRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelR.getInGainDial()));
     volumeLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMEL", *channelL.getOutGainDial()));
@@ -53,6 +68,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
 
 
     destroyButton.setLookAndFeel(&dbLeF);
+    
     linkButton.setLookAndFeel(&blLeF);
     //MSButton.setLookAndFeel(&bMSLeF);
     //LRButton.setLookAndFeel(&bLRLeF);
@@ -118,7 +134,6 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Rectangle<int> filterLPArea(147 + xOffset, 20 + yOffset, buttonDimension, buttonDimension);
     juce::Rectangle<int> filterBPArea(183 + xOffset, 20 + yOffset, buttonDimension, buttonDimension);
     juce::Rectangle<int> filterHPArea(217 + xOffset, 20 + yOffset, buttonDimension, buttonDimension);
-
     //Dials Bounds
     juce::Rectangle<int> freqDialArea(141 + xOffset, 59 + yOffset, secondaryDialDimension, secondaryDialDimension);
     juce::Rectangle<int> inGainDialArea(267 + xOffset, 17 + yOffset, primaryDialDimension, primaryDialDimension);
@@ -200,3 +215,4 @@ void ADHDAudioProcessorEditor::resized()
     //MSButton.setBounds(MSButtonArea);
     msLr.setBounds(msLrArea);
 }
+

@@ -46,7 +46,7 @@ private:
     
     //ATTACHMENTS
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> msAttachment;
-    
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> destroyAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainRAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeLAttachment;
@@ -78,8 +78,6 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> channelOnLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> channelOnRAttachment;
 
-    
-    
     
     //LOOK AND FEEL
     

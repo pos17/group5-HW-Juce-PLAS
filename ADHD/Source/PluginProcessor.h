@@ -67,6 +67,7 @@ private:
     bool channelOnL{ true };
     bool channelOnR{ true };
     bool isMidSide{ false };
+    bool destroy {false};
     float gain[2]{ 1.0,1.0 };
     float dryWet[2]{1.0,1.0};
     float volume[2]{ 1.0,1.0 };

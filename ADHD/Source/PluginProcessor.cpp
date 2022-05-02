@@ -30,6 +30,7 @@ oversamplingModuleR(1, overSampFactor, juce::dsp::Oversampling<float>::FilterTyp
     treeState.addParameterListener("CHANNELONL", this);
     treeState.addParameterListener("CHANNELONR", this);
     
+    treeState.addParameterListener("DESTROY", this);
     treeState.addParameterListener("MIDSIDE", this);
     treeState.addParameterListener("GAINL", this);
     treeState.addParameterListener("GAINR", this);
@@ -61,6 +62,8 @@ ADHDAudioProcessor::~ADHDAudioProcessor()
     
     treeState.removeParameterListener("CHANNELONL", this);
     treeState.removeParameterListener("CHANNELONR", this);
+    
+    treeState.removeParameterListener("DESTROY", this);
     treeState.removeParameterListener("MIDSIDE", this);
     treeState.removeParameterListener("GAINL", this);
     treeState.removeParameterListener("GAINR", this);
@@ -304,6 +307,17 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     float* dataDistR = overSBlockR.getChannelPointer(0);
     
     for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+        if(destroy) {
+            //placeholder to insert the destroy function
+            dataDistL[sample] = expQuasiSim(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+            dataR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+        } else {
+            
+            dataDistL[sample] = halfWaveAsDist(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
+            dataDistR[sample] = halfWaveAsDist(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+        }
+        
+        /*
         if (distType == 0) {
             dataDistL[sample] = halfWaveAsDist(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
             dataDistR[sample] = halfWaveAsDist(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
@@ -317,6 +331,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             dataL[sample] = linearMaPoco(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
             dataR[sample] = linearMaPoco(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
         }
+        */
     }
     //      }
     
@@ -510,6 +525,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto midSideVal = std::make_unique<juce::AudioParameterBool>("MIDSIDE", "MidSide",false);
     parameters.push_back(std::move(midSideVal));
     
+    auto destroyVal = std::make_unique<juce::AudioParameterBool>("DESTROY", "destroy",false);
+    parameters.push_back(std::move(destroyVal));
+    
     auto gainValL = std::make_unique<juce::AudioParameterFloat>("GAINL", "Drive Gain L/MID", 1.0f, 20.0f, 0.0f);
     parameters.push_back(std::move(gainValL));
     auto gainValR = std::make_unique<juce::AudioParameterFloat>("GAINR", "Drive Gain R/SIDE", 1.0f, 20.0f, 0.0f);
@@ -592,6 +610,10 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "MIDSIDE") {
         isMidSide=(bool)newValue;
+    }
+    else if (parameterID == "DESTROY") {
+        destroy = (bool)newValue;
+        std::cout<<"destroy: "<<destroy<<"\n";
     }
     else if (parameterID == "CHANNELONL") {
         channelOnL = (bool)newValue;
