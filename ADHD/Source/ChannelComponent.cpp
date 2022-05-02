@@ -106,6 +106,7 @@ ChannelComponent::ChannelComponent()
 
 ChannelComponent::~ChannelComponent()
 {
+    setNullLookAndFeel();
 }
 
 void ChannelComponent::paint (juce::Graphics& g)
@@ -290,4 +291,17 @@ void ChannelComponent::setHPButtonsLeF(juce::LookAndFeel* lef){
 
 void ChannelComponent::setFilterListLeF(juce::LookAndFeel* lef){
     filterList.setLookAndFeel(lef);
+}
+
+void ChannelComponent::setNullLookAndFeel()
+{
+    setBKLeF(nullptr);
+    setLKLeF(nullptr);
+    setOnButtonsLeF(nullptr);
+
+    setLPButtonsLeF(nullptr);
+    setBPButtonsLeF(nullptr);
+    setHPButtonsLeF(nullptr);
+
+    setFilterListLeF(nullptr);
 }

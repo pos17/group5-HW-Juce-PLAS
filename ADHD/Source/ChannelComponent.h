@@ -55,6 +55,9 @@ public:
     void setHPButtonsLeF(juce::LookAndFeel* lef);
     
     void setFilterListLeF(juce::LookAndFeel* lef);
+
+    //DESTRUCTOR
+    void setNullLookAndFeel();
     
 private:
     // Dials

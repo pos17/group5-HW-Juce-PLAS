@@ -107,6 +107,13 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
 
 ADHDAudioProcessorEditor::~ADHDAudioProcessorEditor()
 {
+    channelL.setNullLookAndFeel();
+    channelR.setNullLookAndFeel();
+
+    destroyButton.setLookAndFeel(nullptr);
+    destroyDial.setLookAndFeel(nullptr);
+    msLr.setLookAndFeel(nullptr);
+    linkButton.setLookAndFeel(nullptr);
 }
 
 //=============================================================================
