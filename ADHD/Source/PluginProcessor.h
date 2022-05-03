@@ -74,8 +74,8 @@ private:
     float volume[2]{ 1.0, 1.0 };
     bool eqOn[2]{ false,false };
     int eqSelect[2]{ 0,0 };
-    float eqQ[2]{ 0.1f,0.1f };
-    float eqFreq[2]{ 100.0f,100.0f };
+    float eqQ[2]{ 0.1f, 0.1f };
+    float eqFreq[2]{ 100.0f, 100.0f };
     int overSampFactor{2};
     int lastSampleRate{44100};
     juce::AudioBuffer<float> dryBufferL = juce::AudioBuffer<float>();
@@ -85,6 +85,7 @@ private:
     juce::AudioBuffer<float> bufferR = juce::AudioBuffer<float>();
     
     void parameterChanged(const juce::String& parameterID, float newValue) override;
+    juce::NormalisableRange<float> freqRange(float min, float max, float interval);
     void updateFilters(int numOfFilter,int type,float freq, float q);
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
@@ -94,12 +95,17 @@ private:
     float expQuasiSim(float sample, float gainVal);
     float halfWaveAsDist(float sample,float gainVal);
     float linearMaPoco(float sample, float gainVal);
+    float mixedGainDistortion(float sample, float gainVal);
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModuleL;
     juce::dsp::Oversampling<float> oversamplingModuleR;
-    juce::dsp::StateVariableFilter::Filter<float> filterL;
-    juce::dsp::StateVariableFilter::Filter<float> filterR;
+
+    /*juce::dsp::StateVariableFilter::Filter<float> filterL;
+    juce::dsp::StateVariableFilter::Filter<float> filterR;*/
+
+    juce::dsp::StateVariableTPTFilter<float> filterL;
+    juce::dsp::StateVariableTPTFilter<float> filterR;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)

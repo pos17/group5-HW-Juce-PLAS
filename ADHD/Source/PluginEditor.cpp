@@ -16,7 +16,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     destroyDial.setRange(0.0, 1.0, 1. / 128);
-    destroyDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    destroyDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     destroyDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     destroyDial.setLookAndFeel(&lkLeF);
     //LRButton.setToggleState(true, false);
