@@ -16,7 +16,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     destroyDial.setRange(0.0, 1.0, 1. / 128);
-    destroyDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    destroyDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     destroyDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     destroyDial.setLookAndFeel(&lkLeF);
     //LRButton.setToggleState(true, false);
@@ -114,6 +114,20 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
         
     };
     
+    destroyButton.onClick = [this] {
+        bool state = destroyButton.getToggleState();
+        bkLeF.setDestroy(state);
+        lkLeF.setDestroy(state);
+        blLeF.setDestroy(state);
+        bOLeF.setDestroy(state);
+        bLPLeF.setDestroy(state);
+        bBPLeF.setDestroy(state);
+        bHPLeF.setDestroy(state);
+        bMSLRLeF.setDestroy(state);
+        setVisible(false);
+        setVisible(true);
+    };
+
     bool state = destroyButton.getToggleState();
     bkLeF.setDestroy(state);
     lkLeF.setDestroy(state);
@@ -154,7 +168,7 @@ ADHDAudioProcessorEditor::~ADHDAudioProcessorEditor()
 //=============================================================================
 void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBG_png, BinaryData::GUI_definitivaBG_pngSize), 0, 0);
+    g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBGMS_png, BinaryData::GUI_definitivaBGMS_pngSize), 0, 0);
 
 
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -205,7 +219,7 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     juce::Rectangle<int> outMeterAreaL(80 + xOffset, 60 + yOffset, 20, 120);
     juce::Rectangle<int> outMeterAreaR(100 + xOffset, 60 + yOffset, 20, 120);
     /**************************************/
-    g.setColour(juce::Colours::red);
+    /*g.setColour(juce::Colours::red);
     g.drawRect(channelAreaL);
     g.drawRect(channelAreaR);
     g.drawRect(destroySectionArea);
@@ -213,12 +227,12 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour( juce::Colours::beige);
     g.drawRect(destroyButtonArea);
-    g.drawRect(destroyDialArea);
+    g.drawRect(destroyDialArea);*/
     
     
     //g.drawRect(LRButtonArea);
     //g.drawRect(MSButtonArea);
-    g.drawRect(msLrArea);
+    //g.drawRect(msLrArea);
     
     
     g.drawRect(inMeterArea);

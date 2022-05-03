@@ -18,33 +18,33 @@ ChannelComponent::ChannelComponent()
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     freqDial.setRange(0.0, 1.0, 1. / 128);
-    freqDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    freqDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     freqDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     freqDial.setValue(0.5);
 
     qFactorDial.setRange(0.0, 1.0, 1. / 128);
-    qFactorDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    qFactorDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     qFactorDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     qFactorDial.setValue(0.5);
     qFactorDial.setDoubleClickReturnValue(true, 0.5);
 
     inGainDial.setRange(0.0, 1.0, 1. / 128);
-    inGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    inGainDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     inGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     inGainDial.setValue(0.5);
 
     toneDial.setRange(0.0, 1.0, 1. / 128);
-    toneDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    toneDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     toneDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     toneDial.setValue(0.5);
 
     outGainDial.setRange(0.0, 1.0, 1. / 128);
-    outGainDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    outGainDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     outGainDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     outGainDial.setValue(0.5);
 
     drywetDial.setRange(0.0, 1.0, 1. / 128);
-    drywetDial.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    drywetDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     drywetDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     drywetDial.setValue(1);
 
@@ -133,7 +133,7 @@ void ChannelComponent::paint (juce::Graphics& g)
     juce::Rectangle<int> outGainDialArea(524, 20, primaryDialDimension, primaryDialDimension);
     juce::Rectangle<int> drywetDialArea(660, 40, secondaryDialDimension, secondaryDialDimension);
 
-    g.setColour(juce::Colours::aquamarine);
+    /*g.setColour(juce::Colours::aquamarine);
     g.drawRect(inGainDialArea);
     g.drawRect(outGainDialArea);
     g.drawRect(toneDialArea);
@@ -147,7 +147,7 @@ void ChannelComponent::paint (juce::Graphics& g)
     g.drawRect(filterHPArea);
     g.drawRect(filtersArea);
     g.drawRect(freqDialArea);
-    g.drawRect(qFactorDialArea);
+    g.drawRect(qFactorDialArea);*/
 }
 
 void ChannelComponent::resized()
