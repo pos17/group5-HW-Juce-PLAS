@@ -12,13 +12,13 @@
 #include "PluginProcessor.h"
 #include "ChannelComponent.h"
 #include "PlasLookAndFeel.h"
-
+#include "PLASLevelMeter.h"
 
 
 //==============================================================================
 /**
 */
-class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor//, public juce::Slider::Listener
+class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
     ADHDAudioProcessorEditor (ADHDAudioProcessor&);
@@ -44,9 +44,15 @@ private:
     
     juce::ToggleButton linkButton;
     
+    PLASLevelMeter plMeterInL {};
+    PLASLevelMeter plMeterInR {};
+    PLASLevelMeter plMeterOutL {};
+    PLASLevelMeter plMeterOutR {};
+    
     void setMonoAttachments();
     void setLinkedAttachments();
     void setUnlinkedAttachments();
+    void timerCallback() override;
     
     //ATTACHMENTS
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> linkAttachment;

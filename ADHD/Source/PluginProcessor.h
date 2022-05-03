@@ -60,7 +60,7 @@ public:
 
     //declaration of variables
     
-    
+    float getRMSValue(int inOut, int channel);
     
 private:
     bool link = false;
@@ -78,6 +78,8 @@ private:
     float eqFreq[2]{ 100.0f,100.0f };
     int overSampFactor{2};
     int lastSampleRate{44100};
+    juce::LinearSmoothedValue<float> rmsLevelInLeft,rmsLevelInRight,rmsLevelOutLeft,rmsLevelOutRight;
+    
     juce::AudioBuffer<float> dryBufferL = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> dryBufferR = juce::AudioBuffer<float>();
     
@@ -86,10 +88,11 @@ private:
     
     void parameterChanged(const juce::String& parameterID, float newValue) override;
     void updateFilters(int numOfFilter,int type,float freq, float q);
-    
+        
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
-    //custom private functions 
+    
+    //custom private functions
     //distortion behaviour
     float expQuasiSim(float sample, float gainVal);
     float halfWaveAsDist(float sample,float gainVal);
@@ -104,5 +107,5 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
     
-
+    
 };

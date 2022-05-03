@@ -180,6 +180,16 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     filterL.prepare(spec);
     filterR.prepare(spec);
     
+    rmsLevelInLeft.reset(sampleRate, 0.2);
+    rmsLevelInRight.reset(sampleRate, 0.2);
+    rmsLevelOutLeft.reset(sampleRate, 0.2);
+    rmsLevelOutRight.reset(sampleRate, 0.2);
+    
+    rmsLevelInLeft.setCurrentAndTargetValue(-60.0f);
+    rmsLevelInRight.setCurrentAndTargetValue(-60.0f);
+    rmsLevelOutLeft.setCurrentAndTargetValue(-60.0f);
+    rmsLevelOutRight.setCurrentAndTargetValue(-60.0f);
+    
 }
 
 void ADHDAudioProcessor::releaseResources()
@@ -249,13 +259,15 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
     
     
-    //optional bypass application
     
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
         bufferL.getWritePointer(0)[sample] = buffer.getReadPointer(0)[sample];
         bufferR.getWritePointer(0)[sample] = buffer.getReadPointer(1)[sample];
         
     }
+    
+    
+    
     //oversampling the audio signal
     overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
     overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
@@ -277,6 +289,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         }
     }
     
+    
+    
     // drycopy save before distortion
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
     float* dataL = overSBlockL.getChannelPointer(0);
@@ -290,6 +304,29 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         
         
     }
+    
+    
+    
+    
+    rmsLevelInLeft.skip(dryBufferL.getNumSamples());
+    rmsLevelInRight.skip(dryBufferR.getNumSamples());
+    {
+        const auto value= juce::Decibels::gainToDecibels(dryBufferL.getRMSLevel(0, 0, dryBufferL.getNumSamples()));
+        if(value < rmsLevelInLeft.getCurrentValue())
+            rmsLevelInLeft.setTargetValue(value);
+        else
+            rmsLevelInLeft.setCurrentAndTargetValue(value);
+    }
+    
+    {
+        const auto value= juce::Decibels::gainToDecibels(dryBufferR.getRMSLevel(0, 0, dryBufferR.getNumSamples()));
+        if(value < rmsLevelInRight.getCurrentValue())
+            rmsLevelInRight.setTargetValue(value);
+        else
+            rmsLevelInRight.setCurrentAndTargetValue(value);
+    }
+    
+    
     
     
     //EQ BLOCK R
@@ -394,15 +431,39 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             
         }
     }
+    
+    
+    
     //downsampling
     oversamplingModuleL.processSamplesDown(srcBlockL);
     oversamplingModuleR.processSamplesDown(srcBlockR);
+    
+    
+    
     buffer.clear(0, 0, buffer.getNumSamples());
     buffer.clear(1, 0, buffer.getNumSamples());
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
         buffer.getWritePointer(0)[sample] = bufferL.getReadPointer(0)[sample];
         buffer.getWritePointer(1)[sample] = bufferR.getReadPointer(0)[sample];
     }
+    rmsLevelOutLeft.skip(bufferL.getNumSamples());
+    rmsLevelOutRight.skip(bufferR.getNumSamples());
+    {
+        const auto value= juce::Decibels::gainToDecibels(bufferL.getRMSLevel(0, 0, bufferL.getNumSamples()));
+        if(value < rmsLevelOutLeft.getCurrentValue())
+            rmsLevelOutLeft.setTargetValue(value);
+        else
+            rmsLevelOutLeft.setCurrentAndTargetValue(value);
+    }
+    
+    {
+        const auto value= juce::Decibels::gainToDecibels(bufferR.getRMSLevel(0, 0, bufferR.getNumSamples()));
+        if(value < rmsLevelOutRight.getCurrentValue())
+            rmsLevelOutRight.setTargetValue(value);
+        else
+            rmsLevelOutRight.setCurrentAndTargetValue(value);
+    }
+    
     
 }
 
@@ -685,4 +746,28 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     else if (parameterID == "DISTTYPE") {
         distType = newValue;
     }
+}
+
+
+float ADHDAudioProcessor::getRMSValue(int inOut,int channel) {
+    jassert(inOut==0 || inOut == 1);
+    jassert(channel==0 || channel == 1);
+    if(inOut==0){
+        if(channel==0 ) {
+            return rmsLevelInLeft.getCurrentValue();
+        } else if(channel == 1) {
+            return rmsLevelInRight.getCurrentValue();
+        } else {
+            return 0.0f;
+        }
+    } else if(inOut==1){
+        if(channel==0 ) {
+            return rmsLevelOutLeft.getCurrentValue();
+        } else if(channel == 1) {
+            return rmsLevelOutRight.getCurrentValue();
+        } else {
+            return 0.0f;
+        }
+    } else
+        return 0.0f;
 }

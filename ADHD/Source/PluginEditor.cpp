@@ -121,7 +121,15 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     bMSLRLeF.setDestroy(state);
     setVisible(false);
     setVisible(true);
-
+    
+    addAndMakeVisible(plMeterInL);
+    addAndMakeVisible(plMeterInR);
+    addAndMakeVisible(plMeterOutL);
+    addAndMakeVisible(plMeterOutR);
+       // Make sure that before the constructor has finished, you've set the
+       // editor's size to whatever you need it to be.
+       startTimerHz(24);
+    
     setSize (1000, 400);
 }
 
@@ -183,7 +191,12 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     
     
     juce::Rectangle<int> inMeterArea(20 + xOffset, 60 + yOffset, 40, 120);
+    juce::Rectangle<int> inMeterAreaL(20 + xOffset, 60 + yOffset, 20, 120);
+    juce::Rectangle<int> inMeterAreaR(40 + xOffset, 60 + yOffset, 20, 120);
+    
     juce::Rectangle<int> outMeterArea(80 + xOffset, 60 + yOffset, 40, 120);
+    juce::Rectangle<int> outMeterAreaL(80 + xOffset, 60 + yOffset, 20, 120);
+    juce::Rectangle<int> outMeterAreaR(100 + xOffset, 60 + yOffset, 20, 120);
     /**************************************/
     g.setColour(juce::Colours::red);
     g.drawRect(channelAreaL);
@@ -202,7 +215,13 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     
     
     g.drawRect(inMeterArea);
+    g.drawRect(inMeterAreaL);
+    g.drawRect(inMeterAreaR);
+    
+    
     g.drawRect(outMeterArea);
+    g.drawRect(outMeterAreaL);
+    g.drawRect(outMeterAreaR);
 
 }
 
@@ -241,6 +260,21 @@ void ADHDAudioProcessorEditor::resized()
     //LRButton.setBounds(LRButtonArea);
     //MSButton.setBounds(MSButtonArea);
     msLr.setBounds(msLrArea);
+    
+    juce::Rectangle<int> inMeterAreaL(20 + xOffset, 60 + yOffset, 20, 120);
+    juce::Rectangle<int> inMeterAreaR(40 + xOffset, 60 + yOffset, 20, 120);
+    
+    juce::Rectangle<int> outMeterAreaL(80 + xOffset, 60 + yOffset, 20, 120);
+    juce::Rectangle<int> outMeterAreaR(100 + xOffset, 60 + yOffset, 20, 120);
+    
+    plMeterInL.setBounds(inMeterAreaL);
+    plMeterInR.setBounds(inMeterAreaR);
+    
+    plMeterOutL.setBounds(outMeterAreaL);
+    plMeterOutR.setBounds(outMeterAreaR);
+    
+    
+    
 }
 
 
@@ -297,4 +331,17 @@ void ADHDAudioProcessorEditor::setUnlinkedAttachments() {
     eqOnRLAttachment.reset ();
     channelOnLRAttachment.reset ();
     channelOnRLAttachment.reset ();
+}
+
+void ADHDAudioProcessorEditor::timerCallback() {
+    plMeterInL.setLevel(audioProcessor.getRMSValue(0,0));
+    plMeterInR.setLevel(audioProcessor.getRMSValue(0,1));
+    plMeterOutL.setLevel(audioProcessor.getRMSValue(1,0));
+    plMeterOutR.setLevel(audioProcessor.getRMSValue(1,1));
+    
+    plMeterInL.repaint();
+    plMeterInR.repaint();
+    plMeterOutL.repaint();
+    plMeterOutR.repaint();
+    
 }
