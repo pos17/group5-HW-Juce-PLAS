@@ -124,8 +124,11 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
         bBPLeF.setDestroy(state);
         bHPLeF.setDestroy(state);
         bMSLRLeF.setDestroy(state);
-        setVisible(false);
-        setVisible(true);
+        plMeterInL.setDestroy(state);
+        plMeterInR.setDestroy(state);
+        plMeterOutL.setDestroy(state);
+        plMeterOutR.setDestroy(state);
+        repaint();
     };
 
     bool state = destroyButton.getToggleState();
@@ -235,14 +238,14 @@ void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
     //g.drawRect(msLrArea);
     
     
-    g.drawRect(inMeterArea);
-    g.drawRect(inMeterAreaL);
-    g.drawRect(inMeterAreaR);
+    //g.drawRect(inMeterArea);
+    //g.drawRect(inMeterAreaL);
+    //g.drawRect(inMeterAreaR);
     
     
-    g.drawRect(outMeterArea);
-    g.drawRect(outMeterAreaL);
-    g.drawRect(outMeterAreaR);
+    //g.drawRect(outMeterArea);
+    //g.drawRect(outMeterAreaL);
+    //g.drawRect(outMeterAreaR);
 
 }
 
