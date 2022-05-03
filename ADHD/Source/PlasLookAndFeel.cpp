@@ -122,12 +122,12 @@ PLASButtonLookAndFeel::PLASButtonLookAndFeel(juce::Image abuttonOnN,
                                              juce::Image abuttonOffN,
                                              juce::Image abuttonOnD,
                                              juce::Image abuttonOffD,
-                                             bool destroy){
+                                             bool aDestroy){
     buttonOnN = abuttonOnN;
     buttonOffN = abuttonOffN;
     buttonOnD = abuttonOnD;
     buttonOffD = abuttonOffD;
-    destroy = destroy;
+    destroy = aDestroy;
 }
 
 void PLASButtonLookAndFeel::setDestroy(bool val) {
@@ -178,16 +178,16 @@ void PLASButtonLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButt
 PLASButLinkLookAndFeel::PLASButLinkLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::Link_Button_png, BinaryData::Link_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Unlink_Button_png, BinaryData::Unlink_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_Link_Button_png, BinaryData::Destroyed_Link_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Unlink_Button_png, BinaryData::Unlink_Button_pngSize), false)
 {
 }
-PLASButOnLookAndFeel::PLASButOnLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_Button_png, BinaryData::ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_Button_png, BinaryData::Destroyed_ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize),  false)
+PLASButOnLookAndFeel::PLASButOnLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_Button_png, BinaryData::ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_Button_png, BinaryData::Destroyed_ON_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_Button_png, BinaryData::OFF_Button_pngSize), false)
 {
 }
-PLASButBPLookAndFeel::PLASButBPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_BP_Button_png, BinaryData::ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_BP_Button_png, BinaryData::Destroyed_ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize),  false)
+PLASButBPLookAndFeel::PLASButBPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_BP_Button_png, BinaryData::ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_BP_Button_png, BinaryData::Destroyed_ON_BP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_BP_Button_png, BinaryData::OFF_BP_Button_pngSize),false)
 {
 }
-PLASButLPLookAndFeel::PLASButLPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_LP_Button_png, BinaryData::ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_LP_Button_png, BinaryData::Destroyed_ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize),  false)
+PLASButLPLookAndFeel::PLASButLPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_LP_Button_png, BinaryData::ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_LP_Button_png, BinaryData::Destroyed_ON_LP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_LP_Button_png, BinaryData::OFF_LP_Button_pngSize),false)
 {
 }
-PLASButHPLookAndFeel::PLASButHPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_HP_Button_png, BinaryData::ON_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_HP_Button_png, BinaryData::OFF_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_HP_Button_png, BinaryData::Destroyed_ON_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_HP_Button_png, BinaryData::OFF_HP_Button_pngSize),  false)
+PLASButHPLookAndFeel::PLASButHPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageCache::getFromMemory(BinaryData::ON_HP_Button_png, BinaryData::ON_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_HP_Button_png, BinaryData::OFF_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::Destroyed_ON_HP_Button_png, BinaryData::Destroyed_ON_HP_Button_pngSize), juce::ImageCache::getFromMemory(BinaryData::OFF_HP_Button_png, BinaryData::OFF_HP_Button_pngSize),false)
 {
 }
 
