@@ -69,3 +69,6 @@ void PLASLevelMeter::setLevel(const float value) {
     else
         level =value;
 }
+void PLASLevelMeter::setDestroy(bool aDestroy) {
+    destroy = aDestroy;
+}

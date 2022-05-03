@@ -61,6 +61,7 @@ public:
     //declaration of variables
     
     float getRMSValue(int inOut, int channel);
+    float getMAGValue(int inOut, int channel);
     
 private:
     bool link = false;
@@ -79,6 +80,7 @@ private:
     int overSampFactor{2};
     int lastSampleRate{44100};
     juce::LinearSmoothedValue<float> rmsLevelInLeft,rmsLevelInRight,rmsLevelOutLeft,rmsLevelOutRight;
+    juce::LinearSmoothedValue<float> magLevelInLeft,magLevelInRight,magLevelOutLeft,magLevelOutRight;
     
     juce::AudioBuffer<float> dryBufferL = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> dryBufferR = juce::AudioBuffer<float>();

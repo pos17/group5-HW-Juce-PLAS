@@ -180,15 +180,25 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     filterL.prepare(spec);
     filterR.prepare(spec);
     
-    rmsLevelInLeft.reset(sampleRate, 0.2);
-    rmsLevelInRight.reset(sampleRate, 0.2);
-    rmsLevelOutLeft.reset(sampleRate, 0.2);
-    rmsLevelOutRight.reset(sampleRate, 0.2);
+    rmsLevelInLeft.reset(sampleRate* pow(2, overSampFactor), 0.5);
+    rmsLevelInRight.reset(sampleRate* pow(2, overSampFactor), 0.5);
+    rmsLevelOutLeft.reset(sampleRate, 0.5);
+    rmsLevelOutRight.reset(sampleRate, 0.5);
     
     rmsLevelInLeft.setCurrentAndTargetValue(-60.0f);
     rmsLevelInRight.setCurrentAndTargetValue(-60.0f);
     rmsLevelOutLeft.setCurrentAndTargetValue(-60.0f);
     rmsLevelOutRight.setCurrentAndTargetValue(-60.0f);
+    
+    magLevelInLeft.reset(sampleRate* pow(2, overSampFactor), 0.2);
+    magLevelInRight.reset(sampleRate* pow(2, overSampFactor), 0.2);
+    magLevelOutLeft.reset(sampleRate, 0.2);
+    magLevelOutRight.reset(sampleRate, 0.2);
+    
+    magLevelInLeft.setCurrentAndTargetValue(-60.0f);
+    magLevelInRight.setCurrentAndTargetValue(-60.0f);
+    magLevelOutLeft.setCurrentAndTargetValue(-60.0f);
+    magLevelOutRight.setCurrentAndTargetValue(-60.0f);
     
 }
 
@@ -326,7 +336,23 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             rmsLevelInRight.setCurrentAndTargetValue(value);
     }
     
+    magLevelInLeft.skip(dryBufferL.getNumSamples());
+    magLevelInRight.skip(dryBufferR.getNumSamples());
+    {
+        const auto value= juce::Decibels::gainToDecibels(dryBufferL.getMagnitude(0, 0, dryBufferL.getNumSamples()));
+        if(value < magLevelInLeft.getCurrentValue())
+            magLevelInLeft.setTargetValue(value);
+        else
+            magLevelInLeft.setCurrentAndTargetValue(value);
+    }
     
+    {
+        const auto value= juce::Decibels::gainToDecibels(dryBufferR.getMagnitude(0, 0, dryBufferR.getNumSamples()));
+        if(value < magLevelInRight.getCurrentValue())
+            magLevelInRight.setTargetValue(value);
+        else
+            magLevelInRight.setCurrentAndTargetValue(value);
+    }
     
     
     //EQ BLOCK R
@@ -462,6 +488,25 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             rmsLevelOutRight.setTargetValue(value);
         else
             rmsLevelOutRight.setCurrentAndTargetValue(value);
+    }
+    
+    
+    magLevelOutLeft.skip(bufferL.getNumSamples());
+    magLevelOutRight.skip(bufferR.getNumSamples());
+    {
+        const auto value= juce::Decibels::gainToDecibels(bufferL.getMagnitude(0, 0, bufferL.getNumSamples()));
+        if(value < magLevelOutLeft.getCurrentValue())
+            magLevelOutLeft.setTargetValue(value);
+        else
+            magLevelOutLeft.setCurrentAndTargetValue(value);
+    }
+    
+    {
+        const auto value= juce::Decibels::gainToDecibels(bufferR.getMagnitude(0, 0, bufferR.getNumSamples()));
+        if(value < magLevelOutRight.getCurrentValue())
+            magLevelOutRight.setTargetValue(value);
+        else
+            magLevelOutRight.setCurrentAndTargetValue(value);
     }
     
     
@@ -765,6 +810,29 @@ float ADHDAudioProcessor::getRMSValue(int inOut,int channel) {
             return rmsLevelOutLeft.getCurrentValue();
         } else if(channel == 1) {
             return rmsLevelOutRight.getCurrentValue();
+        } else {
+            return 0.0f;
+        }
+    } else
+        return 0.0f;
+}
+
+float ADHDAudioProcessor::getMAGValue(int inOut,int channel) {
+    jassert(inOut==0 || inOut == 1);
+    jassert(channel==0 || channel == 1);
+    if(inOut==0){
+        if(channel==0 ) {
+            return magLevelInLeft.getCurrentValue();
+        } else if(channel == 1) {
+            return magLevelInRight.getCurrentValue();
+        } else {
+            return 0.0f;
+        }
+    } else if(inOut==1){
+        if(channel==0 ) {
+            return magLevelOutLeft.getCurrentValue();
+        } else if(channel == 1) {
+            return magLevelOutRight.getCurrentValue();
         } else {
             return 0.0f;
         }

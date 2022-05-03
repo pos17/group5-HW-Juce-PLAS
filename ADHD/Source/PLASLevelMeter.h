@@ -17,6 +17,7 @@ public:
     PLASLevelMeter(juce::Image aMeterStripN, juce::Image aMeterStripD,float aFrames,bool aDestroy);
     void paint(juce::Graphics& g) override;
     void setLevel(const float value);
+    void setDestroy(bool aDestroy);
 private:
     const float minLevel{-60.0f};
     const float maxLevel{+6.0f};
