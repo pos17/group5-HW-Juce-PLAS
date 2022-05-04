@@ -72,6 +72,49 @@ ChannelComponent::ChannelComponent()
     filterBP.setName("filterBP");
     filterHP.setName("filterHP");
     
+    filterOn.onClick = [this] {
+        bool stateLink = filterOn.getToggleState();
+        filterLP.setEnabled(stateLink);
+        filterBP.setEnabled(stateLink);
+        filterHP.setEnabled(stateLink);
+        repaint();
+        
+    };
+    bool stateLink = filterOn.getToggleState();
+    filterLP.setEnabled(stateLink);
+    filterBP.setEnabled(stateLink);
+    filterHP.setEnabled(stateLink);
+    
+    channelOn.onClick = [this] {
+        bool stateOn = channelOn.getToggleState();
+        inGainDial.setEnabled(stateOn);
+        outGainDial.setEnabled(stateOn);
+        freqDial.setEnabled(stateOn);
+        qFactorDial.setEnabled(stateOn);
+        toneDial.setEnabled(stateOn);
+        drywetDial.setEnabled(stateOn);
+        filterOn.setEnabled(stateOn);
+        filterLP.setEnabled(stateOn);
+        filterBP.setEnabled(stateOn);
+        filterHP.setEnabled(stateOn);
+        
+        repaint();
+        
+    };
+    bool stateOn = channelOn.getToggleState();
+    inGainDial.setEnabled(stateOn);
+    outGainDial.setEnabled(stateOn);
+    freqDial.setEnabled(stateOn);
+    qFactorDial.setEnabled(stateOn);
+    toneDial.setEnabled(stateOn);
+    drywetDial.setEnabled(stateOn);
+    filterOn.setEnabled(stateOn);
+    filterLP.setEnabled(stateOn);
+    filterBP.setEnabled(stateOn);
+    filterHP.setEnabled(stateOn);
+    
+    repaint();
+    
     filterLP.setRadioGroupId(Filters);
     filterBP.setRadioGroupId(Filters);
     filterHP.setRadioGroupId(Filters);

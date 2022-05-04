@@ -138,20 +138,24 @@ void PLASButtonLookAndFeel::setDestroy(bool val) {
 void PLASButtonLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
     juce::Image btn = juce::Image();
-    if(!destroy) {
-        if (button.getToggleState()) {
-            btn = buttonOnN;
-        }
-        else {
-            btn = buttonOffN;
+    if(button.isEnabled()) {
+        if(!destroy) {
+            if (button.getToggleState()) {
+                btn = buttonOnN;
+            }
+            else {
+                btn = buttonOffN;
+            }
+        } else {
+            if (button.getToggleState()) {
+                btn = buttonOnD;
+            }
+            else {
+                btn = buttonOffD;
+            }
         }
     } else {
-        if (button.getToggleState()) {
-            btn = buttonOnD;
-        }
-        else {
-            btn = buttonOffD;
-        }
+        btn = buttonOffN;
     }
     float btDimW = (float)button.getWidth();
     float btDimH = (float)button.getHeight();
