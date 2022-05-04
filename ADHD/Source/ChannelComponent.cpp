@@ -77,6 +77,8 @@ ChannelComponent::ChannelComponent()
         filterLP.setEnabled(stateLink);
         filterBP.setEnabled(stateLink);
         filterHP.setEnabled(stateLink);
+        freqDial.setEnabled(stateLink);
+        qFactorDial.setEnabled(stateLink);
         repaint();
         
     };
@@ -98,6 +100,9 @@ ChannelComponent::ChannelComponent()
         filterLP.setEnabled(stateFilt&&stateOn);
         filterBP.setEnabled(stateFilt&&stateOn);
         filterHP.setEnabled(stateFilt&&stateOn);
+        freqDial.setEnabled(stateFilt&&stateOn);
+        qFactorDial.setEnabled(stateFilt&&stateOn);
+        
         
         
         repaint();
