@@ -127,7 +127,8 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
         plMeterOutL.setDestroy(state);
         plMeterOutR.setDestroy(state);
         destroyDial.setEnabled(state);
-        
+        bLRLeF.setDestroy(state);
+        bMSLeF.setDestroy(state);
         repaint();
         
     };
@@ -153,6 +154,8 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     plMeterInR.setDestroy(state);
     plMeterOutL.setDestroy(state);
     plMeterOutR.setDestroy(state);
+    bLRLeF.setDestroy(state);
+    bMSLeF.setDestroy(state);
     repaint();
     
     addAndMakeVisible(plMeterInL);
