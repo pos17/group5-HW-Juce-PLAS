@@ -94,9 +94,11 @@ ChannelComponent::ChannelComponent()
         toneDial.setEnabled(stateOn);
         drywetDial.setEnabled(stateOn);
         filterOn.setEnabled(stateOn);
-        filterLP.setEnabled(stateOn);
-        filterBP.setEnabled(stateOn);
-        filterHP.setEnabled(stateOn);
+        bool stateFilt = filterOn.getToggleState();
+        filterLP.setEnabled(stateFilt&&stateOn);
+        filterBP.setEnabled(stateFilt&&stateOn);
+        filterHP.setEnabled(stateFilt&&stateOn);
+        
         
         repaint();
         

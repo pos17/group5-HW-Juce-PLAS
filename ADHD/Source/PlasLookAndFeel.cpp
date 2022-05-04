@@ -206,6 +206,19 @@ PLASButHPLookAndFeel::PLASButHPLookAndFeel(): PLASButtonLookAndFeel(juce::ImageC
 }
 
 
+PLASButLRLookAndFeel::PLASButLRLookAndFeel():PLASButtonLookAndFeel(
+    
+    juce::ImageCache::getFromMemory(BinaryData::LR_Button_png, BinaryData::LR_Button_pngSize),
+    juce::ImageCache::getFromMemory(BinaryData::OFF_LR_Button_png, BinaryData::OFF_LR_Button_pngSize),
+    juce::ImageCache::getFromMemory(BinaryData::Destroyed_LR_Button_png,BinaryData::Destroyed_LR_Button_pngSize),
+                                                                 juce::ImageCache::getFromMemory(BinaryData::OFF_LR_Button_png, BinaryData::OFF_LR_Button_pngSize),false){}
+
+PLASButMSLookAndFeel::PLASButMSLookAndFeel():PLASButtonLookAndFeel( juce::ImageCache::getFromMemory(BinaryData::MS_Button_png, BinaryData::MS_Button_pngSize),
+    juce::ImageCache::getFromMemory(BinaryData::OFF_MS_Button_png, BinaryData::OFF_MS_Button_pngSize),
+    juce::ImageCache::getFromMemory(BinaryData::Destroyed_MS_Button_png, BinaryData::Destroyed_MS_Button_pngSize),
+    juce::ImageCache::getFromMemory(BinaryData::OFF_MS_Button_png, BinaryData::OFF_MS_Button_pngSize),
+    false){}
+
 
 PLASMSLRLookAndFeel::PLASMSLRLookAndFeel(){
     

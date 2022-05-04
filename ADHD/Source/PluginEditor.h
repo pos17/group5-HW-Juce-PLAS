@@ -21,6 +21,10 @@
 class ADHDAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
+    enum RadioButtonIds
+    {
+        MSLR = 1002
+    };
     ADHDAudioProcessorEditor (ADHDAudioProcessor&);
     ~ADHDAudioProcessorEditor() override;
 
@@ -45,9 +49,9 @@ private:
 
     juce::Slider destroyDial;
     juce::ToggleButton destroyButton;
-    //juce::ToggleButton LRButton;
-    //juce::ToggleButton MSButton;
-    juce::ToggleButton msLr;
+    juce::ToggleButton LRButton;
+    juce::ToggleButton MSButton;
+    //juce::ToggleButton msLr;
     
     juce::ToggleButton linkButton;
     
@@ -64,6 +68,8 @@ private:
     //ATTACHMENTS
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> linkAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> msAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lrAttachment;
+    
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> destroyAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLRAttachment;
@@ -138,6 +144,8 @@ private:
     PLASButBPLookAndFeel bBPLeF {};
     PLASButHPLookAndFeel bHPLeF {};
     PLASMSLRLookAndFeel bMSLRLeF {};
+    PLASButLRLookAndFeel bLRLeF {};
+    PLASButMSLookAndFeel bMSLeF {};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ADHDAudioProcessorEditor);
 };

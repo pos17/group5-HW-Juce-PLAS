@@ -37,6 +37,7 @@ oversamplingModuleR(1, overSampFactor, juce::dsp::Oversampling<float>::FilterTyp
     treeState.addParameterListener("LINK", this);
     treeState.addParameterListener("DESTROY", this);
     treeState.addParameterListener("MIDSIDE", this);
+    treeState.addParameterListener("LEFTRIGHT", this);
     treeState.addParameterListener("GAINL", this);
     treeState.addParameterListener("GAINR", this);
     treeState.addParameterListener("DRYWETL", this);
@@ -74,6 +75,7 @@ ADHDAudioProcessor::~ADHDAudioProcessor()
     treeState.removeParameterListener("CHANNELONR", this);
     
     
+    treeState.removeParameterListener("LEFTRIGHT", this);
     treeState.removeParameterListener("LINK", this);
     treeState.removeParameterListener("DESTROY", this);
     treeState.removeParameterListener("MIDSIDE", this);
@@ -713,7 +715,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     const juce::StringArray msSettings(msSettingsCh, 2);
     auto midSideVal = std::make_unique<juce::AudioParameterBool>("MIDSIDE", "MidSide",false);
     parameters.push_back(std::move(midSideVal));
-    
+    auto leftRightVal = std::make_unique<juce::AudioParameterBool>("LEFTRIGHT", "LeftRight",true);
+    parameters.push_back(std::move(leftRightVal));
     auto destroyVal = std::make_unique<juce::AudioParameterBool>("DESTROY", "destroy",false);
     parameters.push_back(std::move(destroyVal));
     
@@ -815,6 +818,9 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "MIDSIDE") {
         isMidSide=(bool)newValue;
+    }
+    else if (parameterID == "LEFTRIGHT") {
+        isMidSide=!(bool)newValue;
     }
     else if (parameterID == "DESTROY") {
         destroy = (bool)newValue;
