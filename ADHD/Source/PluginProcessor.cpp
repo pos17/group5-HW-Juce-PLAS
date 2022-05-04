@@ -198,6 +198,12 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     filterR.prepare(spec);
     toneFilterL.prepare(spec);
     toneFilterR.prepare(spec);
+    // FILTERS
+    toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    
+    toneFilterL.setResonance(2.0f);
+    toneFilterR.setResonance(2.0f);
     
     rmsLevelInLeft.reset(sampleRate* pow(2, overSampFactor), 0.5);
     rmsLevelInRight.reset(sampleRate* pow(2, overSampFactor), 0.5);
@@ -275,12 +281,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
     
-    // FILTERS
-    toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-    toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     
-    toneFilterL.setResonance(2.0f);
-    toneFilterR.setResonance(2.0f);
     
     //multi channel audio block that englobes the audio buffer used as audio source before oversampling
     juce::dsp::AudioBlock<float> srcBlockL(bufferL);
@@ -886,11 +887,11 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     }
     else if (parameterID == "TONEL") {
         toneFreq[0] = juce::mapToLog10(newValue, 150.0f, 15000.0f);
-        filterL.setCutoffFrequency(toneFreq[0]);
+        toneFilterL.setCutoffFrequency(toneFreq[0]);
     }
     else if (parameterID == "TONER") {
         toneFreq[1] = juce::mapToLog10(newValue, 150.0f, 15000.0f);
-        filterR.setCutoffFrequency(toneFreq[1]);
+        toneFilterR.setCutoffFrequency(toneFreq[1]);
     }
     else if (parameterID == "DISTTYPE") {
         distType = newValue;
