@@ -198,6 +198,7 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     filterR.prepare(spec);
     toneFilterL.prepare(spec);
     toneFilterR.prepare(spec);
+
     // FILTERS
     toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
