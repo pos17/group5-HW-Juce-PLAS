@@ -77,6 +77,7 @@ private:
     int eqSelect[2]{ 0,0 };
     float eqQ[2]{ 0.1f, 0.1f };
     float eqFreq[2]{ 100.0f, 100.0f };
+    float destroyGain = 0.0f;
     int overSampFactor{2};
     int lastSampleRate{44100};
     juce::LinearSmoothedValue<float> rmsLevelInLeft,rmsLevelInRight,rmsLevelOutLeft,rmsLevelOutRight;
@@ -101,6 +102,7 @@ private:
     float halfWaveAsDist(float sample,float gainVal);
     float linearMaPoco(float sample, float gainVal);
     float mixedGainDistortion(float sample, float gainVal);
+    float destroyDistortion(float sample, float gainVal);
     //dsp modules declaration
 
     juce::dsp::Oversampling<float> oversamplingModuleL;

@@ -44,7 +44,9 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     freqLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQL", *channelL.getFreqDial()));
     freqRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQR", *channelR.getFreqDial()));
     qLLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QL", *channelL.getQFactorDial()));
-    qRRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QR", *channelR.getQFactorDial()));
+    qRRAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.treeState, "QR", *channelR.getQFactorDial()));
+    
+    destroyGainAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DESTROYGAIN", destroyDial));
     
     eqLPLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPL", *channelL.getFilterLP()));
     eqBPLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPL", *channelL.getFilterBP()));

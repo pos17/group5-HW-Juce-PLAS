@@ -60,6 +60,8 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> destroyAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainLRAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> destroyGainAttachment;
+
     
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainRRAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainRLAttachment;

@@ -6,9 +6,13 @@
  ==============================================================================
  */
 
+#define _USE_MATH_DEFINES
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include <math.h>
+#include <cmath>
+
 
 //==============================================================================
 ADHDAudioProcessor::ADHDAudioProcessor()
@@ -56,6 +60,7 @@ oversamplingModuleR(1, overSampFactor, juce::dsp::Oversampling<float>::FilterTyp
     treeState.addParameterListener("QR", this);
     treeState.addParameterListener("FREQR", this);
     treeState.addParameterListener("DISTTYPE", this);
+    treeState.addParameterListener("DESTROYGAIN", this);
 }
 
 ADHDAudioProcessor::~ADHDAudioProcessor()
@@ -91,6 +96,8 @@ ADHDAudioProcessor::~ADHDAudioProcessor()
     treeState.removeParameterListener("QR", this);
     treeState.removeParameterListener("DISTTYPE", this);
     treeState.removeParameterListener("FREQR", this);
+    treeState.removeParameterListener("DESTROYGAIN", this);
+
 }
 
 //==============================================================================
@@ -376,8 +383,10 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
         if(destroy) {
             //placeholder to insert the destroy function
-            dataDistL[sample] = expQuasiSim(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
-            dataDistR[sample] = expQuasiSim(dataDistR[sample], gain[1]);//halfWaveAsDist(data[sample], gain[ch]);
+            dataDistL[sample] = dataDistL[sample] * gain[0];
+            dataDistR[sample] = dataDistR[sample] * gain[1];
+            dataDistL[sample] = destroyDistortion(dataDistL[sample], destroyGain);//halfWaveAsDist(data[sample], gain[ch]);
+            dataDistR[sample] = destroyDistortion(dataDistR[sample], destroyGain);//halfWaveAsDist(data[sample], gain[ch]);
         } else {
             
             dataDistL[sample] = mixedGainDistortion(dataDistL[sample], gain[0]);//halfWaveAsDist(data[sample], gain[ch]);
@@ -617,6 +626,15 @@ float ADHDAudioProcessor::mixedGainDistortion(float sample, float gainVal) {
     return sample;
 
 }
+
+float ADHDAudioProcessor::destroyDistortion(float sample, float gainVal) {
+    float distSample;
+    distSample = sin((1 + gainVal) * sample * M_PI) + 0.2 * sin(pow(gainVal, 2) * sample * M_PI);
+    if (distSample < -1) distSample = -1;
+    if (distSample > 1) distSample = 1;
+
+    return distSample;
+}
 //==============================================================================
 bool ADHDAudioProcessor::hasEditor() const
 {
@@ -660,7 +678,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     std::vector<std::unique_ptr<juce::RangedAudioParameter >> parameters;
     
     //reserving the space for the number of parameters we want to create
-    parameters.reserve(16);
+    parameters.reserve(40);
     
     auto bypassLVal = std::make_unique<juce::AudioParameterBool>("CHANNELONL", "channel ON L", true);
     parameters.push_back(std::move(bypassLVal));
@@ -741,6 +759,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     const juce::StringArray distTypeStr(distTypeList, 3);
     auto distTypeSel = std::make_unique<juce::AudioParameterChoice>("DISTTYPE", "distType", distTypeStr, 0);
     parameters.push_back(std::move(distTypeSel));
+
+    auto destroyGain = std::make_unique<juce::AudioParameterFloat>("DESTROYGAIN", "Gain of Destroy Section", 0.0f, 1.0f, 0.f);
+    parameters.push_back(std::move(destroyGain));
     
     return { parameters.begin(),parameters.end() };
 }
@@ -830,10 +851,14 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
         eqSelect[1] = 1;
         updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
         
-    }else if(parameterID == "EQHPR") {
+    }
+    else if (parameterID == "EQHPR") {
         eqSelect[1] = 2;
         updateFilters(1, eqSelect[1], eqQ[1], eqFreq[1]);
-        
+
+    }
+    else if (parameterID == "DESTROYGAIN") {
+        destroyGain = juce::jmap(newValue, 1.0f, 5.0f);
     }
     
     else if (parameterID == "DISTTYPE") {
