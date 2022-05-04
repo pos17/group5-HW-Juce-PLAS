@@ -33,6 +33,13 @@ private:
     // access the processor object that created it.
     ADHDAudioProcessor& audioProcessor; 
 
+    juce::Image bg;
+    juce::Image bgD;
+    juce::Image lrLabel;
+    juce::Image msLabel;
+    juce::Image lrLabelMeter;
+    juce::Image msLabelMeter;
+
     ChannelComponent channelL;
     ChannelComponent channelR;
 
@@ -79,7 +86,12 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqLRAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqRLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqRRAttachment;
-    
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneLLAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneLRAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneRLAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> toneRRAttachment;
+
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> qLLAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> qLRAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> qRLAttachment;

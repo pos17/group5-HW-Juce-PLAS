@@ -60,7 +60,11 @@ oversamplingModuleR(1, overSampFactor, juce::dsp::Oversampling<float>::FilterTyp
     treeState.addParameterListener("QR", this);
     treeState.addParameterListener("FREQR", this);
     treeState.addParameterListener("DISTTYPE", this);
+
     treeState.addParameterListener("DESTROYGAIN", this);
+
+    treeState.addParameterListener("TONEL", this);
+    treeState.addParameterListener("TONER", this);
 }
 
 ADHDAudioProcessor::~ADHDAudioProcessor()
@@ -96,7 +100,11 @@ ADHDAudioProcessor::~ADHDAudioProcessor()
     treeState.removeParameterListener("QR", this);
     treeState.removeParameterListener("DISTTYPE", this);
     treeState.removeParameterListener("FREQR", this);
+
     treeState.removeParameterListener("DESTROYGAIN", this);
+
+    treeState.removeParameterListener("TONEL", this);
+    treeState.removeParameterListener("TONER", this);
 
 }
 
@@ -184,8 +192,12 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     
     filterL.reset();
     filterR.reset();
+    toneFilterL.reset();
+    toneFilterR.reset();
     filterL.prepare(spec);
     filterR.prepare(spec);
+    toneFilterL.prepare(spec);
+    toneFilterR.prepare(spec);
     
     rmsLevelInLeft.reset(sampleRate* pow(2, overSampFactor), 0.5);
     rmsLevelInRight.reset(sampleRate* pow(2, overSampFactor), 0.5);
@@ -263,8 +275,12 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
     
+    // FILTERS
+    toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     
-    
+    toneFilterL.setResonance(2.0f);
+    toneFilterR.setResonance(2.0f);
     
     //multi channel audio block that englobes the audio buffer used as audio source before oversampling
     juce::dsp::AudioBlock<float> srcBlockL(bufferL);
@@ -411,6 +427,9 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     //      }
     
+    // tone processing
+    toneFilterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlockL));
+    toneFilterR.process(juce::dsp::ProcessContextReplacing <float>(overSBlockR));
     
     
     //parallel drywet channels Sum
@@ -543,7 +562,6 @@ void ADHDAudioProcessor::updateFilters(int numOfFilter, int type, float q, float
             filterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
             filterL.setCutoffFrequency(freq);
             filterL.setResonance(q);
-            DBG("Freq: "<<freq);
         } else if(type==1){
             /*filterL.parameters->type = juce::dsp::
             StateVariableFilter::Parameters<float>::Type::bandPass;
@@ -762,6 +780,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
 
     auto destroyGain = std::make_unique<juce::AudioParameterFloat>("DESTROYGAIN", "Gain of Destroy Section", 0.0f, 1.0f, 0.f);
     parameters.push_back(std::move(destroyGain));
+
+    auto toneFreqL = std::make_unique<juce::AudioParameterFloat>("TONEL", "Tone frequency L", 0.0f, 1.0f, 0.5f);
+    parameters.push_back(std::move(toneFreqL));
+
+    auto toneFreqR = std::make_unique<juce::AudioParameterFloat>("TONER", "Tone frequency R", 0.0f, 1.0f, 0.5f);
+    parameters.push_back(std::move(toneFreqR));
     
     return { parameters.begin(),parameters.end() };
 }
@@ -860,7 +884,14 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
     else if (parameterID == "DESTROYGAIN") {
         destroyGain = juce::jmap(newValue, 1.0f, 5.0f);
     }
-    
+    else if (parameterID == "TONEL") {
+        toneFreq[0] = juce::mapToLog10(newValue, 150.0f, 15000.0f);
+        filterL.setCutoffFrequency(toneFreq[0]);
+    }
+    else if (parameterID == "TONER") {
+        toneFreq[1] = juce::mapToLog10(newValue, 150.0f, 15000.0f);
+        filterR.setCutoffFrequency(toneFreq[1]);
+    }
     else if (parameterID == "DISTTYPE") {
         distType = newValue;
     }

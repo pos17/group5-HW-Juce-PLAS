@@ -22,7 +22,15 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     //LRButton.setToggleState(true, false);
     //linkButton.setToggleState(true, false);
     
+    bg = juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBG_png, BinaryData::GUI_definitivaBG_pngSize);
+    bgD = juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBG_Destroy_png, BinaryData::GUI_definitivaBG_Destroy_pngSize);
     
+    lrLabel = juce::ImageCache::getFromMemory(BinaryData::LR_labels_png, BinaryData::LR_labels_pngSize);
+    msLabel = juce::ImageCache::getFromMemory(BinaryData::MS_labels_png, BinaryData::MS_labels_pngSize);
+    lrLabelMeter = juce::ImageCache::getFromMemory(BinaryData::LR_labels_meters_png, BinaryData::LR_labels_meters_pngSize);
+    msLabelMeter = juce::ImageCache::getFromMemory(BinaryData::MS_labels_meters_png, BinaryData::MS_labels_meters_pngSize);
+
+
     linkButton.onClick = [this] {
         bool stateLink = linkButton.getToggleState();
         if(stateLink)
@@ -64,6 +72,8 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     channelOnLLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONL", *channelL.getChannelOn()));
     channelOnRRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONR", *channelR.getChannelOn()));
 
+    toneLLAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.treeState, "TONEL", *channelL.getToneDial()));
+    toneRRAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.treeState, "TONER", *channelR.getToneDial()));
 
     destroyButton.setLookAndFeel(&dbLeF);
     
@@ -133,6 +143,10 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
         repaint();
     };
 
+    msLr.onClick = [this] {
+        repaint();
+    };
+
     bool state = destroyButton.getToggleState();
     bkLeF.setDestroy(state);
     lkLeF.setDestroy(state);
@@ -173,8 +187,17 @@ ADHDAudioProcessorEditor::~ADHDAudioProcessorEditor()
 //=============================================================================
 void ADHDAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::GUI_definitivaBGMS_png, BinaryData::GUI_definitivaBGMS_pngSize), 0, 0);
+    if (destroyButton.getToggleState()) g.drawImageAt(bgD, 0, 0);
+    else g.drawImageAt(bg, 0, 0);
 
+    if (!msLr.getToggleState()) {
+        g.drawImageAt(lrLabel, 77, 82);
+        g.drawImageAt(lrLabelMeter, 859, 86);
+    }
+    else {
+        g.drawImageAt(msLabel, 77, 82);
+        g.drawImageAt(msLabelMeter, 859, 86);
+    }
 
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     juce::Rectangle<int> channelAreaL(30, 30, 780, 160);
@@ -287,11 +310,11 @@ void ADHDAudioProcessorEditor::resized()
     //MSButton.setBounds(MSButtonArea);
     msLr.setBounds(msLrArea);
     
-    juce::Rectangle<int> inMeterAreaL(20 + xOffset, 60 + yOffset, 20, 120);
-    juce::Rectangle<int> inMeterAreaR(40 + xOffset, 60 + yOffset, 20, 120);
+    juce::Rectangle<int> inMeterAreaL(26 + xOffset, 65 + yOffset, 17, 105);
+    juce::Rectangle<int> inMeterAreaR(44 + xOffset, 65 + yOffset, 17, 105);
     
-    juce::Rectangle<int> outMeterAreaL(80 + xOffset, 60 + yOffset, 20, 120);
-    juce::Rectangle<int> outMeterAreaR(100 + xOffset, 60 + yOffset, 20, 120);
+    juce::Rectangle<int> outMeterAreaL(79 + xOffset, 65 + yOffset, 17, 105);
+    juce::Rectangle<int> outMeterAreaR(97 + xOffset, 65 + yOffset, 17, 105);
     
     plMeterInL.setBounds(inMeterAreaL);
     plMeterInR.setBounds(inMeterAreaR);
@@ -306,29 +329,32 @@ void ADHDAudioProcessorEditor::resized()
 
 void ADHDAudioProcessorEditor::setLinkedAttachments() {
     
+    // R -> L
     gainRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINL", *channelR.getInGainDial()));
     volumeRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMEL", *channelR.getOutGainDial()));
     dryWetRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETL", *channelR.getDryWetDial()));
     freqRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQL", *channelR.getFreqDial()));
     qRLAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QL", *channelR.getQFactorDial()));
-    eqBPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPR", *channelL.getFilterBP()));
     eqLPRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPL", *channelR.getFilterLP()));
     eqBPRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPL", *channelR.getFilterBP()));
     eqHPRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPL", *channelR.getFilterHP()));
     eqOnRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONL", *channelR.getFilterOn()));
     channelOnRLAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONL", *channelR.getChannelOn()));
+    toneRLAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.treeState, "TONEL", *channelR.getToneDial()));
     
-    
+    // L -> R
     gainLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "GAINR", *channelL.getInGainDial()));
     volumeLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "VOLUMER", *channelL.getOutGainDial()));
     dryWetLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "DRYWETR", *channelL.getDryWetDial()));
     freqLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "FREQR", *channelL.getFreqDial()));
     qLRAttachment.reset (new juce::AudioProcessorValueTreeState::SliderAttachment (audioProcessor.treeState, "QR", *channelL.getQFactorDial()));
     eqLPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQLPR", *channelL.getFilterLP()));
+    eqBPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQBPR", *channelL.getFilterBP()));
     eqHPLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQHPR", *channelL.getFilterHP()));
     eqOnLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "EQONR", *channelL.getFilterOn()));
     channelOnLRAttachment.reset (new juce::AudioProcessorValueTreeState::ButtonAttachment (audioProcessor.treeState, "CHANNELONR", *channelL.getChannelOn()));
-     
+    toneLRAttachment.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.treeState, "TONER", *channelL.getToneDial()));
+   
 }
 
 void ADHDAudioProcessorEditor::setUnlinkedAttachments() {
@@ -343,6 +369,9 @@ void ADHDAudioProcessorEditor::setUnlinkedAttachments() {
     freqRLAttachment.reset ();
     qLRAttachment.reset ();
     qRLAttachment.reset ();
+
+    toneLRAttachment.reset();
+    toneRLAttachment.reset();
     
     eqLPLRAttachment.reset ();
     eqBPLRAttachment.reset ();

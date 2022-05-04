@@ -80,6 +80,8 @@ private:
     float destroyGain = 0.0f;
     int overSampFactor{2};
     int lastSampleRate{44100};
+    float toneFreq[2] = { 10000.0f, 10000.0f };
+
     juce::LinearSmoothedValue<float> rmsLevelInLeft,rmsLevelInRight,rmsLevelOutLeft,rmsLevelOutRight;
     juce::LinearSmoothedValue<float> magLevelInLeft,magLevelInRight,magLevelOutLeft,magLevelOutRight;
     
@@ -113,6 +115,9 @@ private:
 
     juce::dsp::StateVariableTPTFilter<float> filterL;
     juce::dsp::StateVariableTPTFilter<float> filterR;
+
+    juce::dsp::StateVariableTPTFilter<float> toneFilterL;
+    juce::dsp::StateVariableTPTFilter<float> toneFilterR;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADHDAudioProcessor)
