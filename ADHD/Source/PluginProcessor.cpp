@@ -740,7 +740,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto eqSelectL = std::make_unique<juce::AudioParameterChoice>("EQSELECTL","eq select L",eqSettings,0);
     parameters.push_back(std::move(eqSelectL));
     
-    auto eqHPL = std::make_unique<juce::AudioParameterBool>("EQHPL", "eq Hp L", true);
+    auto eqHPL = std::make_unique<juce::AudioParameterBool>("EQHPL", "eq Hp L", false);
     parameters.push_back(std::move(eqHPL));
     auto eqBPL = std::make_unique<juce::AudioParameterBool>("EQBPL", "eq Bp L", false);
     parameters.push_back(std::move(eqBPL));
