@@ -15,6 +15,7 @@ PLASLookAndFeel::PLASLookAndFeel()
 {
     knobStripN = juce::Image();
     knobStripD = juce::Image();
+    knobStripDisabled = juce::Image();
     frames = 0;
     destroy = false;
 }
@@ -24,6 +25,9 @@ void PLASLookAndFeel::setKnobStripN(juce::Image src) {
 }
 void PLASLookAndFeel::setKnobStripD(juce::Image src) {
     knobStripD = src;
+}
+void PLASLookAndFeel::setKnobStripDisabled(juce::Image src) {
+    knobStripDisabled = src;
 }
 void PLASLookAndFeel::setFrames(int fr) {
     frames = fr;
@@ -35,12 +39,15 @@ void PLASLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int widt
                                        const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider)
 {
     juce::Image knobStrip = juce::Image();
-    
-    if(destroy) {
-        knobStrip = knobStripD;
-    }
-    else {
-        knobStrip = knobStripN;
+    if(slider.isEnabled()) {
+        if(destroy) {
+            knobStrip = knobStripD;
+        }
+        else {
+            knobStrip = knobStripN;
+        }
+    } else {
+        knobStrip=knobStripDisabled;
     }
     float knobDimW = width;
     float knobDimH = height;
@@ -70,12 +77,15 @@ void PLASLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int widt
 PLASBigKnobLookFeel::PLASBigKnobLookFeel() {
     PLASLookAndFeel::setKnobStripD(juce::ImageCache::getFromMemory(BinaryData::Primary_Destroyed_png, BinaryData::Primary_Destroyed_pngSize));
     PLASLookAndFeel::setKnobStripN(juce::ImageCache::getFromMemory(BinaryData::Primary_png, BinaryData::Primary_pngSize));
+    PLASLookAndFeel::setKnobStripDisabled(juce::ImageCache::getFromMemory(BinaryData::Primary_Disabled_png, BinaryData::Primary_Disabled_pngSize));
+    
     PLASLookAndFeel::setFrames(128);
 }
 
 PLASLittleKnobLookFeel::PLASLittleKnobLookFeel() {
     PLASLookAndFeel::setKnobStripD(juce::ImageCache::getFromMemory(BinaryData::Secondary_Destroyed_png, BinaryData::Secondary_Destroyed_pngSize));
     PLASLookAndFeel::setKnobStripN(juce::ImageCache::getFromMemory(BinaryData::Secondary_png, BinaryData::Secondary_pngSize));
+    PLASLookAndFeel::setKnobStripDisabled(juce::ImageCache::getFromMemory(BinaryData::Secondary_Disabled_png, BinaryData::Secondary_Disabled_pngSize));
     PLASLookAndFeel::setFrames(128);
 }
 

@@ -16,6 +16,7 @@ public:
     PLASLookAndFeel();
     void setKnobStripN(juce::Image src);
     void setKnobStripD(juce::Image src);
+    void setKnobStripDisabled(juce::Image src);
     void setFrames(int fr);
     void setDestroy(bool dest);
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
@@ -23,6 +24,7 @@ public:
 private:
     juce::Image knobStripN;
     juce::Image knobStripD;
+    juce::Image knobStripDisabled;
     juce::Image ButtonN;
     juce::Image buttonD;
     int frames;
