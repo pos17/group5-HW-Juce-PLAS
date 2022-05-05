@@ -436,7 +436,14 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     toneFilterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlockL));
     toneFilterR.process(juce::dsp::ProcessContextReplacing <float>(overSBlockR));
     
-    
+    //volume application
+
+    overSBlockL.multiplyBy(volume[0]);
+    overSBlockR.multiplyBy(volume[1]);
+    //oversDryBlockL.multiplyBy(volume[0]);
+    //oversDryBlockR.multiplyBy(volume[1]);
+
+
     //parallel drywet channels Sum
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
     float* dataDwL = overSBlockL.getChannelPointer(0);
@@ -458,12 +465,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         dataDwR[sample] = (dryWet[1] * dataDwR[sample]) + ((1.0f - dryWet[1]) * dryDataCopyDwR[sample]);
     }
     //}
-    //volume application
     
-    overSBlockL.multiplyBy(volume[0]);
-    overSBlockR.multiplyBy(volume[1]);
-    oversDryBlockL.multiplyBy(volume[0]);
-    oversDryBlockR.multiplyBy(volume[1]);
     /*
      for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
      float* data = overSBlock.getChannelPointer(ch);
