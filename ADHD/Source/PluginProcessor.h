@@ -18,6 +18,8 @@ class ADHDAudioProcessor : public juce::AudioProcessor, public juce::AudioProces
 public:
     //==============================================================================
     ADHDAudioProcessor();
+    //ADHDAudioProcessor(ADHDAudioProcessor & ADHDCopy);
+    
     ~ADHDAudioProcessor() override;
 
     //==============================================================================
@@ -53,6 +55,7 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    const auto getTreeState();
     
 
 
