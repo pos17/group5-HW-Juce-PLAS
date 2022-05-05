@@ -206,8 +206,8 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     
-    toneFilterL.setResonance(2.0f);
-    toneFilterR.setResonance(2.0f);
+    toneFilterL.setResonance(0.5f);
+    toneFilterR.setResonance(0.5f);
     
     rmsLevelInLeft.reset(sampleRate* pow(2, overSampFactor), 0.5);
     rmsLevelInRight.reset(sampleRate* pow(2, overSampFactor), 0.5);
@@ -795,10 +795,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout ADHDAudioProcessor::createPa
     auto destroyGain = std::make_unique<juce::AudioParameterFloat>("DESTROYGAIN", "Gain of Destroy Section", 0.0f, 1.0f, 0.f);
     parameters.push_back(std::move(destroyGain));
 
-    auto toneFreqL = std::make_unique<juce::AudioParameterFloat>("TONEL", "Tone frequency L", 0.0f, 1.0f, 0.5f);
+    auto toneFreqL = std::make_unique<juce::AudioParameterFloat>("TONEL", "Tone frequency L", 0.0f, 1.0f, 1.0f);
     parameters.push_back(std::move(toneFreqL));
 
-    auto toneFreqR = std::make_unique<juce::AudioParameterFloat>("TONER", "Tone frequency R", 0.0f, 1.0f, 0.5f);
+    auto toneFreqR = std::make_unique<juce::AudioParameterFloat>("TONER", "Tone frequency R", 0.0f, 1.0f, 1.0f);
     parameters.push_back(std::move(toneFreqR));
     
     return { parameters.begin(),parameters.end() };
