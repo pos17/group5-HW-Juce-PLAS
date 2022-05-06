@@ -73,19 +73,16 @@ ChannelComponent::ChannelComponent()
     filterHP.setName("filterHP");
     
     filterOn.onClick = [this] {
-        bool stateLink = filterOn.getToggleState();
-        filterLP.setEnabled(stateLink);
-        filterBP.setEnabled(stateLink);
-        filterHP.setEnabled(stateLink);
-        freqDial.setEnabled(stateLink);
-        qFactorDial.setEnabled(stateLink);
+        bool stateFilt = filterOn.getToggleState();
+        bool stateOn = channelOn.getToggleState();
+        filterLP.setEnabled(stateFilt&&stateOn);
+        filterBP.setEnabled(stateFilt&&stateOn);
+        filterHP.setEnabled(stateFilt&&stateOn);
+        freqDial.setEnabled(stateFilt&&stateOn);
+        qFactorDial.setEnabled(stateFilt&&stateOn);
         repaint();
-        
     };
-    bool stateLink = filterOn.getToggleState();
-    filterLP.setEnabled(stateLink);
-    filterBP.setEnabled(stateLink);
-    filterHP.setEnabled(stateLink);
+    
     
     channelOn.onClick = [this] {
         bool stateOn = channelOn.getToggleState();
@@ -102,12 +99,15 @@ ChannelComponent::ChannelComponent()
         filterHP.setEnabled(stateFilt&&stateOn);
         freqDial.setEnabled(stateFilt&&stateOn);
         qFactorDial.setEnabled(stateFilt&&stateOn);
-        
-        
-        
         repaint();
-        
     };
+    
+    
+    filterLP.setRadioGroupId(Filters);
+    filterBP.setRadioGroupId(Filters);
+    filterHP.setRadioGroupId(Filters);
+    
+    
     bool stateOn = channelOn.getToggleState();
     inGainDial.setEnabled(stateOn);
     outGainDial.setEnabled(stateOn);
@@ -116,16 +116,13 @@ ChannelComponent::ChannelComponent()
     toneDial.setEnabled(stateOn);
     drywetDial.setEnabled(stateOn);
     filterOn.setEnabled(stateOn);
-    filterLP.setEnabled(stateOn);
-    filterBP.setEnabled(stateOn);
-    filterHP.setEnabled(stateOn);
+    bool stateFilt = filterOn.getToggleState();
+    filterLP.setEnabled(stateFilt&&stateOn);
+    filterBP.setEnabled(stateFilt&&stateOn);
+    filterHP.setEnabled(stateFilt&&stateOn);
+    freqDial.setEnabled(stateFilt&&stateOn);
+    qFactorDial.setEnabled(stateFilt&&stateOn);
     
-    repaint();
-    
-    filterLP.setRadioGroupId(Filters);
-    filterBP.setRadioGroupId(Filters);
-    filterHP.setRadioGroupId(Filters);
-     
     //ADD AND MAKE VISIBLE
     addAndMakeVisible(freqDial);
     addAndMakeVisible(qFactorDial);
@@ -145,13 +142,8 @@ ChannelComponent::ChannelComponent()
     
     //addAndMakeVisible(filterList);
     // Listeners
-    freqDial.addListener(this);
-    qFactorDial.addListener(this);
-    inGainDial.addListener(this);
-    toneDial.addListener(this);
-    outGainDial.addListener(this);
-    drywetDial.addListener(this);
-
+    
+    
 }
 
 ChannelComponent::~ChannelComponent()

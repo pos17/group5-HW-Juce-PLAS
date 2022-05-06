@@ -86,9 +86,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     LRButton.setLookAndFeel(&bLRLeF);
     //msLr.setLookAndFeel(&bMSLRLeF);
 
-    //ADD AND MAKE VISIBLE
-    addAndMakeVisible(channelL);
-    addAndMakeVisible(channelR);
+    
     channelL.setBKLeF(&bkLeF);
     channelR.setBKLeF(&bkLeF);
     channelL.setLKLeF(&lkLeF);
@@ -102,16 +100,8 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     channelL.setHPButtonsLeF(&bHPLeF);
     channelR.setHPButtonsLeF(&bHPLeF);
     
-    addAndMakeVisible(destroyDial);
-    addAndMakeVisible(destroyButton);
-    addAndMakeVisible(LRButton);
-    addAndMakeVisible(MSButton);
-    //addAndMakeVisible(msLr);
     
-    addAndMakeVisible(linkButton);
-
-    //LISTENERS
-    //destroyDial.addListener(this);
+    
     destroyButton.onClick = [this] {
         bool state = destroyButton.getToggleState();
         bkLeF.setDestroy(state);
@@ -142,6 +132,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
         repaint();
     };
     bool state = destroyButton.getToggleState();
+    destroyDial.setEnabled(state);
     bkLeF.setDestroy(state);
     lkLeF.setDestroy(state);
     blLeF.setDestroy(state);
@@ -158,6 +149,20 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
     bMSLeF.setDestroy(state);
     repaint();
     
+    
+    //ADD AND MAKE VISIBLE
+    
+    
+    addAndMakeVisible(channelL);
+    addAndMakeVisible(channelR);
+    addAndMakeVisible(destroyDial);
+    addAndMakeVisible(destroyButton);
+    addAndMakeVisible(LRButton);
+    addAndMakeVisible(MSButton);
+    //addAndMakeVisible(msLr);
+    
+    addAndMakeVisible(linkButton);
+
     addAndMakeVisible(plMeterInL);
     addAndMakeVisible(plMeterInR);
     addAndMakeVisible(plMeterOutL);
@@ -165,13 +170,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
        // Make sure that before the constructor has finished, you've set the
        // editor's size to whatever you need it to be.
        startTimerHz(24);
-    channelL.getFilterLP()->setEnabled(false);
-    channelL.getFilterBP()->setEnabled(false);
-    channelL.getFilterHP()->setEnabled(false);
-    channelR.getFilterLP()->setEnabled(false);
-    channelR.getFilterBP()->setEnabled(false);
-    channelR.getFilterHP()->setEnabled(false);
-    destroyDial.setEnabled(false);
+    
     setSize (1000, 400);
 }
 
