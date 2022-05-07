@@ -185,8 +185,10 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     lastSampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
-    dryBufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
-    dryBufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    //dryBufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    //dryBufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    dryBufferL = juce::AudioBuffer<float>(1, (int)samplesPerBlock);
+    dryBufferR = juce::AudioBuffer<float>(1, (int)samplesPerBlock);
     bufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
     bufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
     //initialization of the oversampling block specifying the maximum num of samples per block
@@ -293,8 +295,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     juce::dsp::AudioBlock<float> overSBlockL(buffer);
     juce::dsp::AudioBlock<float> overSBlockR(buffer);
     //juce::dsp::AudioBlock<float> overSBlockEq(buffer);
-    juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
-    juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
+    juce::dsp::AudioBlock<float> srcDryBlockL(dryBufferL);
+    juce::dsp::AudioBlock<float> srcDryBlockR(dryBufferR);
     
     
     
@@ -305,18 +307,11 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     
-    
-    //oversampling the audio signal
-    overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
-    overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
-    
-    
-    
     //Mid-Side encoding
     if (isInternalMidSide) {
-        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
-            float* dataL = overSBlockL.getChannelPointer(0);
-            float* dataR = overSBlockR.getChannelPointer(0);
+        for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
+            float* dataL = srcBlockL.getChannelPointer(0);
+            float* dataR = srcBlockR.getChannelPointer(0);
             
             float dataMid = dataL[sample] + dataR[sample];
             float dataSide = dataL[sample] - dataR[sample];
@@ -328,23 +323,19 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         }
     }
     
-    
-    
     // drycopy save before distortion
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-    float* dataL = overSBlockL.getChannelPointer(0);
-    float* dryDataCopyL = oversDryBlockL.getChannelPointer(0);
-    float* dataR = overSBlockR.getChannelPointer(0);
-    float* dryDataCopyR = oversDryBlockR.getChannelPointer(0);
+    float* dataL = srcBlockL.getChannelPointer(0);
+    float* dryDataCopyL = srcDryBlockL.getChannelPointer(0);
+    float* dataR = srcBlockR.getChannelPointer(0);
+    float* dryDataCopyR = srcDryBlockR.getChannelPointer(0);
     
-    for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+    for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
         dryDataCopyL[sample] = dataL[sample];
         dryDataCopyR[sample] = dataR[sample];
         
         
     }
-    
-    
     
     
     rmsLevelInLeft.skip(dryBufferL.getNumSamples());
@@ -382,6 +373,12 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         else
             magLevelInRight.setCurrentAndTargetValue(value);
     }
+    
+    
+    
+    //oversampling the audio signal
+    overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
+    overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
     
     
     //EQ BLOCK R
@@ -444,12 +441,16 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     //oversDryBlockR.multiplyBy(volume[1]);
 
 
+    
+    //downsampling
+    oversamplingModuleL.processSamplesDown(srcBlockL);
+    oversamplingModuleR.processSamplesDown(srcBlockR);
     //parallel drywet channels Sum
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-    float* dataDwL = overSBlockL.getChannelPointer(0);
-    float* dryDataCopyDwL = oversDryBlockL.getChannelPointer(0);
-    float* dataDwR = overSBlockR.getChannelPointer(0);
-    float* dryDataCopyDwR = oversDryBlockR.getChannelPointer(0);
+    float* dataDwL = srcBlockL.getChannelPointer(0);
+    float* dryDataCopyDwL = srcDryBlockL.getChannelPointer(0);
+    float* dataDwR = srcBlockR.getChannelPointer(0);
+    float* dryDataCopyDwR = srcDryBlockR.getChannelPointer(0);
     if(!channelOnL){
         dryWet[0]=0;
     } else{
@@ -460,7 +461,9 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     } else{
         dryWet[1]=*treeState.getRawParameterValue("DRYWETR");
     }
-    for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+    
+    
+    for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
         dataDwL[sample] = (dryWet[0] * dataDwL[sample]) + ((1.0f - dryWet[0]) * dryDataCopyDwL[sample]);
         dataDwR[sample] = (dryWet[1] * dataDwR[sample]) + ((1.0f - dryWet[1]) * dryDataCopyDwR[sample]);
     }
@@ -480,9 +483,9 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     //mid-side decoding
     
     if (isInternalMidSide) {
-        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
-            float* dataMid = overSBlockL.getChannelPointer(0);
-            float* dataSide = overSBlockR.getChannelPointer(0);
+        for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
+            float* dataMid = srcBlockL.getChannelPointer(0);
+            float* dataSide = srcBlockR.getChannelPointer(0);
             
             float dataL = dataMid[sample] + dataSide[sample];
             float dataR = dataMid[sample] - dataSide[sample];
@@ -496,9 +499,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     
     
     
-    //downsampling
-    oversamplingModuleL.processSamplesDown(srcBlockL);
-    oversamplingModuleR.processSamplesDown(srcBlockR);
+    
     
     
     
