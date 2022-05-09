@@ -294,16 +294,12 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     
     //juce::dsp::AudioBlock<float> overSBlockEq(buffer);
     
-    
-    bufferL.copyFrom(0, 0, buffer, 0, 0, buffer.getNumSamples());
-    bufferR.copyFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
-    /*
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
         bufferL.getWritePointer(0)[sample] = buffer.getReadPointer(0)[sample];
         bufferR.getWritePointer(0)[sample] = buffer.getReadPointer(1)[sample];
         
     }
-    */
+    
     
     
     juce::dsp::AudioBlock<float> srcBlockL(bufferL);
