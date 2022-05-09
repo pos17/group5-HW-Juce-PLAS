@@ -327,12 +327,16 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         }
     }
     
-    
+    dryBufferL.copyFrom(0, 0, overSBlockL.getChannelPointer(0), overSBlockL.getNumSamples());
+    dryBufferR.copyFrom(0, 0, overSBlockR.getChannelPointer(0), overSBlockR.getNumSamples());
     juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
     juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
+    oversDryBlockL.copyFrom(overSBlockL);
+    oversDryBlockR.copyFrom(overSBlockR);
     
     // drycopy save before distortion
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+    /*
     float* dataL = overSBlockL.getChannelPointer(0);
     float* dryDataCopyL = oversDryBlockL.getChannelPointer(0);
     float* dataR = overSBlockR.getChannelPointer(0);
@@ -344,7 +348,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         
         
     }
-    
+    */
     
     
     
