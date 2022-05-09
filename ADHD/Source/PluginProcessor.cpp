@@ -510,12 +510,14 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     
     
     
-    buffer.clear(0, 0, buffer.getNumSamples());
-    buffer.clear(1, 0, buffer.getNumSamples());
+    //buffer.clear(0, 0, buffer.getNumSamples());
+    //buffer.clear(1, 0, buffer.getNumSamples());
+    /*
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
-        buffer.getWritePointer(0)[sample] = bufferL.getReadPointer(0)[sample];
+        buffer.getWritePointer(0)[sample] = buffer.getReadPointer(0)[sample];
         buffer.getWritePointer(1)[sample] = bufferR.getReadPointer(0)[sample];
     }
+     */
     rmsLevelOutLeft.skip(bufferL.getNumSamples());
     rmsLevelOutRight.skip(bufferR.getNumSamples());
     {
