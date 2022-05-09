@@ -90,7 +90,8 @@ private:
     
     juce::AudioBuffer<float> dryBufferL = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> dryBufferR = juce::AudioBuffer<float>();
-    
+    juce::AudioBuffer<float> overBufferL = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> overBufferR = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> bufferL = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> bufferR = juce::AudioBuffer<float>();
     

@@ -187,6 +187,8 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     spec.numChannels = getTotalNumOutputChannels();
     dryBufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
     dryBufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    overBufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    overBufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
     bufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
     bufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
     //initialization of the oversampling block specifying the maximum num of samples per block
@@ -293,19 +295,22 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     //juce::dsp::AudioBlock<float> overSBlockEq(buffer);
     
     
-    
-    
+    bufferL.copyFrom(0, 0, buffer, 0, 0, buffer.getNumSamples());
+    bufferR.copyFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
+    /*
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
         bufferL.getWritePointer(0)[sample] = buffer.getReadPointer(0)[sample];
         bufferR.getWritePointer(0)[sample] = buffer.getReadPointer(1)[sample];
         
     }
+    */
     
-    juce::dsp::AudioBlock<float> overSBlockL(buffer);
-    juce::dsp::AudioBlock<float> overSBlockR(buffer);
+    
     juce::dsp::AudioBlock<float> srcBlockL(bufferL);
     juce::dsp::AudioBlock<float> srcBlockR(bufferR);
     //oversampling the audio signal
+    juce::dsp::AudioBlock<float> overSBlockL(overBufferL);
+    juce::dsp::AudioBlock<float> overSBlockR(overBufferR);
     overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
     overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
     
@@ -327,8 +332,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         }
     }
     
-    dryBufferL.copyFrom(0, 0, overSBlockL.getChannelPointer(0), overSBlockL.getNumSamples());
-    dryBufferR.copyFrom(0, 0, overSBlockR.getChannelPointer(0), overSBlockR.getNumSamples());
+    dryBufferL.makeCopyOf(overBufferL);
+    dryBufferR.makeCopyOf(overBufferR);
     juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
     juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
     oversDryBlockL.copyFrom(overSBlockL);
