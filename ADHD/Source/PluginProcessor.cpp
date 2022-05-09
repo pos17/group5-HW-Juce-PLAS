@@ -185,12 +185,15 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     lastSampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
-    //dryBufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
-    //dryBufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    
     dryBufferL = juce::AudioBuffer<float>(1, (int)samplesPerBlock);
     dryBufferR = juce::AudioBuffer<float>(1, (int)samplesPerBlock);
     bufferL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
     bufferR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock ));
+    dryBufferOverL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    dryBufferOverR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    bufferOverL = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
+    bufferOverR = juce::AudioBuffer<float>(1, (int)(samplesPerBlock * pow(2, overSampFactor)));
     //initialization of the oversampling block specifying the maximum num of samples per block
     oversamplingModuleL.initProcessing(samplesPerBlock);
     oversamplingModuleR.initProcessing(samplesPerBlock);
@@ -292,26 +295,48 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     //multi channel audio block that englobes the audio buffer used as audio source before oversampling
     juce::dsp::AudioBlock<float> srcBlockL(bufferL);
     juce::dsp::AudioBlock<float> srcBlockR(bufferR);
-    juce::dsp::AudioBlock<float> overSBlockL(buffer);
-    juce::dsp::AudioBlock<float> overSBlockR(buffer);
-    //juce::dsp::AudioBlock<float> overSBlockEq(buffer);
+    juce::dsp::AudioBlock<float> overSBlockL(bufferOverL);
+    juce::dsp::AudioBlock<float> overSBlockR(bufferOverR);
     juce::dsp::AudioBlock<float> srcDryBlockL(dryBufferL);
     juce::dsp::AudioBlock<float> srcDryBlockR(dryBufferR);
+    juce::dsp::AudioBlock<float> overSDryBlockL(dryBufferOverL);
+    juce::dsp::AudioBlock<float> overSDryBlockR(dryBufferOverR);
     
     
+    bufferL.clear();
+    bufferR.clear();
+    bufferOverL.clear();
+    bufferOverR.clear();
+    dryBufferL.clear();
+    dryBufferR.clear();
+    dryBufferOverL.clear();
+    dryBufferOverR.clear();
     
+    /*
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
         bufferL.getWritePointer(0)[sample] = buffer.getReadPointer(0)[sample];
         bufferR.getWritePointer(0)[sample] = buffer.getReadPointer(1)[sample];
         
     }
+    */
+    bufferL.copyFrom(0, 0, buffer, 0, 0, buffer.getNumSamples());
+    bufferR.copyFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
+    dryBufferL.copyFrom(0, 0, buffer, 0, 0, buffer.getNumSamples());
+    dryBufferR.copyFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
     
+    
+    
+    
+    
+    //oversampling the audio signal
+    overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
+    overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
     
     //Mid-Side encoding
     if (isInternalMidSide) {
-        for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
-            float* dataL = srcBlockL.getChannelPointer(0);
-            float* dataR = srcBlockR.getChannelPointer(0);
+        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+            float* dataL = overSBlockL.getChannelPointer(0);
+            float* dataR = overSBlockR.getChannelPointer(0);
             
             float dataMid = dataL[sample] + dataR[sample];
             float dataSide = dataL[sample] - dataR[sample];
@@ -323,14 +348,22 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         }
     }
     
-    // drycopy save before distortion
-    //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-    float* dataL = srcBlockL.getChannelPointer(0);
-    float* dryDataCopyL = srcDryBlockL.getChannelPointer(0);
-    float* dataR = srcBlockR.getChannelPointer(0);
-    float* dryDataCopyR = srcDryBlockR.getChannelPointer(0);
     
-    for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
+    
+    // drycopy save before distortion
+    
+    //dryBufferOverL.copyFrom(0, 0, overSBlockL., 0, 0, dryBufferOverL.getNumSamples());
+    //dryBufferOverR.copyFrom(0, 0, bufferOverR, 0, 0, dryBufferOverR.getNumSamples());
+
+    
+    //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
+    
+    float* dataL = overSBlockL.getChannelPointer(0);
+    float* dryDataCopyL = overSDryBlockL.getChannelPointer(0);
+    float* dataR = overSBlockR.getChannelPointer(0);
+    float* dryDataCopyR = overSDryBlockR.getChannelPointer(0);
+    
+    for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
         dryDataCopyL[sample] = dataL[sample];
         dryDataCopyR[sample] = dataR[sample];
         
@@ -338,10 +371,10 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     
-    rmsLevelInLeft.skip(dryBufferL.getNumSamples());
-    rmsLevelInRight.skip(dryBufferR.getNumSamples());
+    rmsLevelInLeft.skip(bufferOverL.getNumSamples());
+    rmsLevelInRight.skip(bufferOverR.getNumSamples());
     {
-        const auto value= juce::Decibels::gainToDecibels(dryBufferL.getRMSLevel(0, 0, dryBufferL.getNumSamples()));
+        const auto value= juce::Decibels::gainToDecibels(bufferOverL.getRMSLevel(0, 0, bufferOverL.getNumSamples()));
         if(value < rmsLevelInLeft.getCurrentValue())
             rmsLevelInLeft.setTargetValue(value);
         else
@@ -349,17 +382,17 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     {
-        const auto value= juce::Decibels::gainToDecibels(dryBufferR.getRMSLevel(0, 0, dryBufferR.getNumSamples()));
+        const auto value= juce::Decibels::gainToDecibels(bufferOverR.getRMSLevel(0, 0, bufferOverR.getNumSamples()));
         if(value < rmsLevelInRight.getCurrentValue())
             rmsLevelInRight.setTargetValue(value);
         else
             rmsLevelInRight.setCurrentAndTargetValue(value);
     }
     
-    magLevelInLeft.skip(dryBufferL.getNumSamples());
-    magLevelInRight.skip(dryBufferR.getNumSamples());
+    magLevelInLeft.skip(bufferOverL.getNumSamples());
+    magLevelInRight.skip(bufferOverR.getNumSamples());
     {
-        const auto value= juce::Decibels::gainToDecibels(dryBufferL.getMagnitude(0, 0, dryBufferL.getNumSamples()));
+        const auto value= juce::Decibels::gainToDecibels(bufferOverL.getMagnitude(0, 0, bufferOverL.getNumSamples()));
         if(value < magLevelInLeft.getCurrentValue())
             magLevelInLeft.setTargetValue(value);
         else
@@ -367,18 +400,12 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     {
-        const auto value= juce::Decibels::gainToDecibels(dryBufferR.getMagnitude(0, 0, dryBufferR.getNumSamples()));
+        const auto value= juce::Decibels::gainToDecibels(bufferOverR.getMagnitude(0, 0, bufferOverR.getNumSamples()));
         if(value < magLevelInRight.getCurrentValue())
             magLevelInRight.setTargetValue(value);
         else
             magLevelInRight.setCurrentAndTargetValue(value);
     }
-    
-    
-    
-    //oversampling the audio signal
-    overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
-    overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
     
     
     //EQ BLOCK R
@@ -442,28 +469,18 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
 
 
     
-    //downsampling
-    oversamplingModuleL.processSamplesDown(srcBlockL);
-    oversamplingModuleR.processSamplesDown(srcBlockR);
+    
     //parallel drywet channels Sum
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
-    float* dataDwL = srcBlockL.getChannelPointer(0);
-    float* dryDataCopyDwL = srcDryBlockL.getChannelPointer(0);
-    float* dataDwR = srcBlockR.getChannelPointer(0);
-    float* dryDataCopyDwR = srcDryBlockR.getChannelPointer(0);
-    if(!channelOnL){
-        dryWet[0]=0;
-    } else{
-        dryWet[0]=*treeState.getRawParameterValue("DRYWETL");
-    }
-    if(!channelOnR){
-        dryWet[1]=0;
-    } else{
-        dryWet[1]=*treeState.getRawParameterValue("DRYWETR");
-    }
+    float* dataDwL = overSBlockL.getChannelPointer(0);
+    float* dryDataCopyDwL = overSDryBlockL.getChannelPointer(0);
+    float* dataDwR = overSBlockR.getChannelPointer(0);
+    float* dryDataCopyDwR = overSDryBlockR.getChannelPointer(0);
+    dryWet[0]=*treeState.getRawParameterValue("DRYWETL");
+    dryWet[1]=*treeState.getRawParameterValue("DRYWETR");
     
     
-    for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
+    for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
         dataDwL[sample] = (dryWet[0] * dataDwL[sample]) + ((1.0f - dryWet[0]) * dryDataCopyDwL[sample]);
         dataDwR[sample] = (dryWet[1] * dataDwR[sample]) + ((1.0f - dryWet[1]) * dryDataCopyDwR[sample]);
     }
@@ -483,9 +500,9 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     //mid-side decoding
     
     if (isInternalMidSide) {
-        for (int sample = 0; sample < srcBlockL.getNumSamples(); sample++) {
-            float* dataMid = srcBlockL.getChannelPointer(0);
-            float* dataSide = srcBlockR.getChannelPointer(0);
+        for (int sample = 0; sample < overSBlockL.getNumSamples(); sample++) {
+            float* dataMid = overSBlockL.getChannelPointer(0);
+            float* dataSide = overSBlockR.getChannelPointer(0);
             
             float dataL = dataMid[sample] + dataSide[sample];
             float dataR = dataMid[sample] - dataSide[sample];
@@ -500,19 +517,36 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     
     
     
-    
+    //downsampling
+    oversamplingModuleL.processSamplesDown(srcBlockL);
+    oversamplingModuleR.processSamplesDown(srcBlockR);
     
     
     buffer.clear(0, 0, buffer.getNumSamples());
     buffer.clear(1, 0, buffer.getNumSamples());
+    
+    if(channelOnL){
+        buffer.copyFrom(0, 0, bufferL, 0, 0, buffer.getNumSamples());
+    } else {
+        buffer.copyFrom(0, 0, dryBufferL, 0, 0, buffer.getNumSamples());
+    }
+    if(channelOnR){
+        buffer.copyFrom(1, 0, bufferR, 0, 0, buffer.getNumSamples());
+    } else {
+        buffer.copyFrom(1, 0, dryBufferR, 0, 0, buffer.getNumSamples());
+        
+    }
+    /*
     for (int sample = 0; sample < bufferL.getNumSamples(); sample++) {
         buffer.getWritePointer(0)[sample] = bufferL.getReadPointer(0)[sample];
         buffer.getWritePointer(1)[sample] = bufferR.getReadPointer(0)[sample];
     }
-    rmsLevelOutLeft.skip(bufferL.getNumSamples());
-    rmsLevelOutRight.skip(bufferR.getNumSamples());
+    */
+    
+    rmsLevelOutLeft.skip(buffer.getNumSamples());
+    rmsLevelOutRight.skip(buffer.getNumSamples());
     {
-        const auto value= juce::Decibels::gainToDecibels(bufferL.getRMSLevel(0, 0, bufferL.getNumSamples()));
+        const auto value= juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
         if(value < rmsLevelOutLeft.getCurrentValue())
             rmsLevelOutLeft.setTargetValue(value);
         else
@@ -520,7 +554,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     {
-        const auto value= juce::Decibels::gainToDecibels(bufferR.getRMSLevel(0, 0, bufferR.getNumSamples()));
+        const auto value= juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
         if(value < rmsLevelOutRight.getCurrentValue())
             rmsLevelOutRight.setTargetValue(value);
         else
@@ -528,8 +562,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     
-    magLevelOutLeft.skip(bufferL.getNumSamples());
-    magLevelOutRight.skip(bufferR.getNumSamples());
+    magLevelOutLeft.skip(buffer.getNumSamples());
+    magLevelOutRight.skip(buffer.getNumSamples());
     {
         const auto value= juce::Decibels::gainToDecibels(bufferL.getMagnitude(0, 0, bufferL.getNumSamples()));
         if(value < magLevelOutLeft.getCurrentValue())

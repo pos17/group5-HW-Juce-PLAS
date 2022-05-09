@@ -91,8 +91,13 @@ private:
     juce::AudioBuffer<float> dryBufferL = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> dryBufferR = juce::AudioBuffer<float>();
     
+    juce::AudioBuffer<float> dryBufferOverL = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> dryBufferOverR = juce::AudioBuffer<float>();
+    
     juce::AudioBuffer<float> bufferL = juce::AudioBuffer<float>();
     juce::AudioBuffer<float> bufferR = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> bufferOverL = juce::AudioBuffer<float>();
+    juce::AudioBuffer<float> bufferOverR = juce::AudioBuffer<float>();
     
     void parameterChanged(const juce::String& parameterID, float newValue) override;
     juce::NormalisableRange<float> freqRange(float min, float max, float interval);
