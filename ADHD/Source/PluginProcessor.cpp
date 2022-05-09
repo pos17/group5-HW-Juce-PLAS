@@ -288,13 +288,10 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     
     
     //multi channel audio block that englobes the audio buffer used as audio source before oversampling
-    juce::dsp::AudioBlock<float> srcBlockL(bufferL);
-    juce::dsp::AudioBlock<float> srcBlockR(bufferR);
-    juce::dsp::AudioBlock<float> overSBlockL(buffer);
-    juce::dsp::AudioBlock<float> overSBlockR(buffer);
+    
+    
     //juce::dsp::AudioBlock<float> overSBlockEq(buffer);
-    juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
-    juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
+    
     
     
     
@@ -304,8 +301,10 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
         
     }
     
-    
-    
+    juce::dsp::AudioBlock<float> overSBlockL(buffer);
+    juce::dsp::AudioBlock<float> overSBlockR(buffer);
+    juce::dsp::AudioBlock<float> srcBlockL(bufferL);
+    juce::dsp::AudioBlock<float> srcBlockR(bufferR);
     //oversampling the audio signal
     overSBlockL = oversamplingModuleL.processSamplesUp(srcBlockL);
     overSBlockR = oversamplingModuleR.processSamplesUp(srcBlockR);
@@ -329,6 +328,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     }
     
     
+    juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
+    juce::dsp::AudioBlock<float> oversDryBlockR(dryBufferR);
     
     // drycopy save before distortion
     //for (int ch = 0; ch < overSBlock.getNumChannels(); ++ch) {
