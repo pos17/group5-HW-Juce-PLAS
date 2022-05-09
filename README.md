@@ -22,6 +22,10 @@ A complete description of the development of the system can be found in the [rep
 ## Getting Started
 
 In order to build the plugin on your own Computer:
+
+https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-b284-d9a3775c0927.mp4
+
+
 1. Download the git repository
 2. Download the [Juce source code](https://juce.com/get-juce)
 3. Open a new Projucer file. 
@@ -35,7 +39,7 @@ In order to build the plugin on your own Computer:
 
 
 ## Usage
-<img src="gitAssets/DestroyFunc.mp4"/>
+
 
 1. The <em>GUI</em> is divided in four channelstrips, one for each sound. 
   ![](./images/fireGUIEx.png)
