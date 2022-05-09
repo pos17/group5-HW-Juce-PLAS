@@ -18,6 +18,7 @@ Granulands consists of a granular synthesizer that plays four different **Foley*
 A complete description of the development of the system can be found in the [report](https://github.com/polimi-cmls-22/group5-HW-SC-PLAS/blob/main/report1.pdf)
  -->
 <em>Auto Destructive Harmonic Distortion</em> allows the user to process the sound in a complete way. The plugin is composed of two channels that give the possibility to the user of a Left-Right or Mid-side processing. Every channel has both a input filter that allows three types of prefiltering (lowpass, bandpass, highpass), and a filter positioned after distortion. Moreover the plugin offers a true-peak level meter to monitor input-output levels.  
+A complete description of the development of the system can be found in the [report](https://github.com/polimi-cmls-22/group5-HW-SC-PLAS/blob/main/report1.pdf)
 
 ## Getting Started
 
@@ -34,27 +35,45 @@ https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-
 6. Run the juce project in order to open it in the IDE
 7. Build the plugin in the IDE
 8. Import it in the plugins folder of your DAW
-9. USE IT!! 
+9. TRY IT!! 
 
 
 
 ## Usage
 
 
-1. The <em>GUI</em> is divided in four channelstrips, one for each sound. 
-  ![](./images/fireGUIEx.png)
-   * On the left side of the channel the user can find the knobs to modify the parameters affecting the generation of the sound.
-   * ![image info](./images/FireParams.PNG)
+1. The <em>GUI</em> is divided in two channelstrips, one for each channel. Each channel-strip contains some controls: 
+  ![](./gitAssets/FullPlugin.PNG)
+    
+
    
-   * The oscilloscopes allow to monitor the output of each channel.
-   * ![](./images/oscilloscope.PNG) 
+   * The ON-Button allows to turn ON or turn OFF the single channel
+   * ![image info](./gitAssets/CHANNELON.PNG)
+   
 
-   * Pan and distance knobs allow to control the position of the sounds in the stereo space.
-   * ![](./images/pan%26distance.PNG)
+   * The Filter-ON button allows to turn ON or OFF the single input-filter.
+   
+   * The Filter-switch allows to select type of input-filter between Lowpass, Bandpass, Highpass.
+   
+   * The Frequency-Dial allows to change the the cut-off or central frequency of the filter. 
+   
+   * The Q-Dial allows to change the the cut-off or central frequency of the filter. 
+   * ![image info](./gitAssets/FILTER.PNG)
+   
 
-   * The play button allows to select the single sound to be played 
-   * ![](./images/playButton.PNG)
+
+   * The gain Dial allows to enhance the input gain in order to make the distortion stronger.
+   * ![](./gitAssets/GAINDIAL.PNG)
+
+   * The Tone Dial allows to control the tone filter applied after distortion.
+   * ![](./gitAssets/TONE.PNG)
   
+   * The Volume Dial allows to control the volume applied at the end of the channel processing.
+   * ![](./gitAssets/VOLUME.PNG)
+  
+   * The WET knob allows to blend wet and dry signal to 
+   * ![](./gitAssets/WET.PNG)
+
 2. The master section allows to control the parameters of the master channel and all the sounds generated.
 
    ![](./images/masterSection.PNG)
@@ -130,6 +149,5 @@ group5-HW-SC-PLAS
 ## Components 
 Alberto Doimo (alberto.doimo@mail.polimi.it) </p>
 Paolo Ostan (paolo.ostan@mail.polimi.it) </p>
-
 Stefano Donà (stefano2.dona@mail.polimi.it) </p>
 Lorenzo Curcio (lorenzo.curcio@mail.polimi.it) </p>
