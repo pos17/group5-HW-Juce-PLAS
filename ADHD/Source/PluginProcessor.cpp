@@ -331,7 +331,8 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
             
         }
     }
-    
+    dryBufferL.clear();
+    dryBufferR.clear();
     dryBufferL.makeCopyOf(overBufferL);
     dryBufferR.makeCopyOf(overBufferR);
     juce::dsp::AudioBlock<float> oversDryBlockL(dryBufferL);
