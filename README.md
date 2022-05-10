@@ -74,17 +74,18 @@ https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-
    * The WET knob allows to blend wet and dry signal to 
    * ![](./gitAssets/WET.PNG)
 
-2. The master section allows to control the parameters of the master channel and all the sounds generated.
 
-   ![](./images/masterSection.PNG)
+2. The master section allows to control the parameters that involve the processing in the whole plugin:
 
-   * The **PLAYALL** button allows to play all the sounds together and to stop some or all them if they are playing.
-   * ![](./images/playAllBTN.PNG)
+   ![](./gitAssets/MASTERCH.PNG)
 
-   * The reverb controls allow the user to modify the parameters of the reverb effect applied to the master channel
-   * ![](./images/reverbSec.PNG)
-   * The Master Volume section allows to visualize the output level of the main signal
-   * ![](./images/masterVolume.PNG)
+   * The **LR** and **MS** buttons allows to change the two channels encoding between Left-Right and Mid-Side processing   
+
+   * Two double level meters allow to monitor the input and output PEAK-Levels.
+  
+   * The destoy button allows the user to add a distortion block that enhances harmonic content transforming the first gain dial in a linear input gain
+
+   * The **Destruction Dial** controls a characteristic parameter for the Destruction function that allows to modify the dynamic function in order to enhance the harmonic content. 
 
 3. The panner section is composed of two elements: 
    * A little panner view in the main window allows  to visualize the changes made on the sound spatial position, and allows to open the main panner window if clicked. 
