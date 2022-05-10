@@ -36,7 +36,7 @@ ChannelComponent::ChannelComponent()
     toneDial.setRange(0.0, 1.0, 1. / 128);
     toneDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     toneDial.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    toneDial.setValue(0.5);
+    toneDial.setValue(1);
 
     outGainDial.setRange(0.0, 1.0, 1. / 128);
     outGainDial.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);

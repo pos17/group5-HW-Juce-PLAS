@@ -206,8 +206,11 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     
-    toneFilterL.setResonance(0.5f);
-    toneFilterR.setResonance(0.5f);
+    toneFilterL.setResonance(0.7f);
+    toneFilterR.setResonance(0.7f);
+
+    toneFilterL.setCutoffFrequency(toneFreq[0]);
+    toneFilterR.setCutoffFrequency(toneFreq[1]);
     
     rmsLevelInLeft.reset(sampleRate* pow(2, overSampFactor), 0.5);
     rmsLevelInRight.reset(sampleRate* pow(2, overSampFactor), 0.5);
@@ -436,6 +439,7 @@ void ADHDAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mi
     // tone processing
     toneFilterL.process(juce::dsp::ProcessContextReplacing <float>(overSBlockL));
     toneFilterR.process(juce::dsp::ProcessContextReplacing <float>(overSBlockR));
+
     
     //volume application
 
