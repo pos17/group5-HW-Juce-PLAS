@@ -2,7 +2,7 @@
 
  <em>Group 5 PLAS</em>
 
-- [**Auto Destrctive Harmonic Distortion**](#auto-destrctive-harmonic-distortion)
+- [**Auto Destructive Harmonic Distortion**](#auto-destructive-harmonic-distortion)
   - [Project Description](#project-description)
   - [Getting Started](#getting-started)
   - [Usage](#usage)
@@ -89,9 +89,10 @@ In order to build the plugin on your own Computer:
 
 ## Distortion curves
 
+On the video below we can see the non-linear response function associated with the standard distortion of the plugin.
  https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-b284-d9a3775c0927.mp4
 
-
+On the video below we can see the non-linear response function associated with the Destructive distortion of the plugin.
  https://user-images.githubusercontent.com/62107154/167714148-b8a70f89-3f9a-43a1-85be-9171ff038bd9.mp4
 
 
