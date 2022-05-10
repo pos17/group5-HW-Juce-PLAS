@@ -83,7 +83,7 @@ private:
     float destroyGain = 0.0f;
     int overSampFactor{2};
     int lastSampleRate{44100};
-    float toneFreq[2] = { 10000.0f, 10000.0f };
+    float toneFreq[2] = { 16000.0f, 16000.0f };
 
     juce::LinearSmoothedValue<float> rmsLevelInLeft,rmsLevelInRight,rmsLevelOutLeft,rmsLevelOutRight;
     juce::LinearSmoothedValue<float> magLevelInLeft,magLevelInRight,magLevelOutLeft,magLevelOutRight;
