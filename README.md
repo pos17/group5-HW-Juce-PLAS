@@ -6,6 +6,7 @@
   - [Project Description](#project-description)
   - [Getting Started](#getting-started)
   - [Usage](#usage)
+  - [Distortion curves](#distortion-curves)
   - [Folder Structure](#folder-structure)
   - [Notes](#notes)
   - [Components](#components)
@@ -24,7 +25,6 @@ A complete description of the development of the system can be found in the [rep
 
 In order to build the plugin on your own Computer:
 
-https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-b284-d9a3775c0927.mp4
 
 
 1. Download the git repository
@@ -87,13 +87,10 @@ https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-
 
    * The **Destruction Dial** controls a characteristic parameter for the Destruction function that allows to modify the dynamic function in order to enhance the harmonic content. 
 
-3. The panner section is composed of two elements: 
-   * A little panner view in the main window allows  to visualize the changes made on the sound spatial position, and allows to open the main panner window if clicked. 
-   * ![](/images/littlePanner.PNG)
-   * The main panner window allows the user to visualize the spatial position of the sounds and to move them inside the stereo spectrum by dragging them on the window.
-   * ![](./images/Panner.png)
+## Distortion curves
 
-4. The little button on the upper left corner allows the user to set some backgrounds to better visualize the type sounds playing
+ https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-b284-d9a3775c0927.mp4
+
 
 ## Folder Structure
 
