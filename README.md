@@ -103,55 +103,21 @@ On the video below we can see the non-linear response function associated with t
 
 ## Folder Structure
 
-The project repository contains one supercollider file that contains the code to run the synth and various folders:
-* "buffer" contains the audio file used as source for granular synthesis. 
-* "backgrounds" contains the images used as optional backgrounds for the GUI.
+The project repository contains one Projucer file that contains the main project setup with builds for:
+* VISUAL STUDIO 22 
+* VISUAL STUDIO 19
+* XCODE
+The projucer file stores two folders:
+* "Source" containing the Source code for building the plugin.
+* "Assets" containing the images used for the GUI.
 * "pointers" contains the images used as pointers for the panner window.
-* "images" contains all the images used in the report and in the README
-
-```
-group5-HW-SC-PLAS
- ┣ backgrounds
- ┃ ┣ Fire_crop.png
- ┃ ┣ Shrek_crop.png
- ┃ ┣ Walk_crop.png
- ┃ ┗ Wolf_crop.png
- ┣ buffer
- ┃ ┗ 1.wav
- ┣ images
- ┃ ┣ attenuation-graph.png
- ┃ ┣ Fire signal flow.png
- ┃ ┣ fireGUIEx.PNG
- ┃ ┣ FireParams.PNG
- ┃ ┣ frogs signal flow.png
- ┃ ┣ Granulands.png
- ┃ ┣ littlePanner.PNG
- ┃ ┣ main patch diagram.png
- ┃ ┣ masterSection.PNG
- ┃ ┣ masterVolume.PNG
- ┃ ┣ oscilloscope.PNG
- ┃ ┣ pan&distance.PNG
- ┃ ┣ Panner.png
- ┃ ┣ playAllBTN.PNG
- ┃ ┣ playButton.PNG
- ┃ ┣ reverbSec.PNG
- ┃ ┣ steps signal flow.png
- ┃ ┗ wolf signal flow.png
- ┣ pointers
- ┃ ┣ cricket.png
- ┃ ┣ fire.png
- ┃ ┣ steps.png
- ┃ ┗ wolf.png
- ┣ LICENSE
- ┣ PLASgui.scd
- ┣ readme.md
- ┗ report1.pdf
-```
+* "gitAssets" contains all the images used in the report and in the README
 
 
 ## Notes
 
-* The system has been built and tested on Windows 10 OS machines and using it on MAC OS could lead to minor GUI problems. It is suggested to close the main window and restart the system in order to fix them
+* The system has been built and tested on Windows 10 OS machines built using VISUAL STUDIO 22 and on MAC OS using XCODE.
+* The plugin has been tested on REAPER both on Windows and MAC and on Garage Band. 
 
 ## Components 
 Alberto Doimo (alberto.doimo@mail.polimi.it) </p>
