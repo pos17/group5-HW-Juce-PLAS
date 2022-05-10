@@ -113,7 +113,7 @@ The projucer file stores two folders:
 * "Source" containing the Source code for building the plugin.
 * "Assets" containing the images used for the GUI.
 * "pointers" contains the images used as pointers for the panner window.
-* "gitAssets" contains all the images used in the report and in the README
+* "gitAssets" contains all the images used in the report and in the README.
 
 
 ## Notes
