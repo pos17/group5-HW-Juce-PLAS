@@ -1,4 +1,4 @@
-# **Auto Destrctive Harmonic Distortion**
+# **Auto Destructive Harmonic Distortion**
 
  <em>Group 5 PLAS</em>
 
