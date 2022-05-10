@@ -206,8 +206,8 @@ void ADHDAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     toneFilterL.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     toneFilterR.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     
-    toneFilterL.setResonance(0.7f);
-    toneFilterR.setResonance(0.7f);
+    toneFilterL.setResonance(0.5f);
+    toneFilterR.setResonance(0.5f);
 
     toneFilterL.setCutoffFrequency(toneFreq[0]);
     toneFilterR.setCutoffFrequency(toneFreq[1]);
@@ -909,11 +909,11 @@ void ADHDAudioProcessor::parameterChanged(const juce::String& parameterID, float
         destroyGain = juce::jmap(newValue, 1.0f, 5.0f);
     }
     else if (parameterID == "TONEL") {
-        toneFreq[0] = juce::mapToLog10(newValue, 150.0f, 15000.0f);
+        toneFreq[0] = juce::mapToLog10(newValue, 100.0f, 15000.0f);
         toneFilterL.setCutoffFrequency(toneFreq[0]);
     }
     else if (parameterID == "TONER") {
-        toneFreq[1] = juce::mapToLog10(newValue, 150.0f, 15000.0f);
+        toneFreq[1] = juce::mapToLog10(newValue, 100.0f, 15000.0f);
         toneFilterR.setCutoffFrequency(toneFreq[1]);
     }
     else if (parameterID == "DISTTYPE") {
