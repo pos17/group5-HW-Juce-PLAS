@@ -171,7 +171,7 @@ ADHDAudioProcessorEditor::ADHDAudioProcessorEditor(ADHDAudioProcessor& p): Audio
        // editor's size to whatever you need it to be.
        startTimerHz(24);
     
-    setSize (1000, 400);
+    setSize (1000, 432);
 }
 
 ADHDAudioProcessorEditor::~ADHDAudioProcessorEditor()
@@ -283,14 +283,14 @@ void ADHDAudioProcessorEditor::resized()
     // subcomponents in your editor..
 
     // Link Button Bounds
-    juce::Rectangle<int> linkButtonArea(109, 181, 22, 38);
+    juce::Rectangle<int> linkButtonArea(109, 213, 22, 38);
 
     // Channels Bounds
-    juce::Rectangle<int> channelAreaL(30, 30, 780, 160);
-    juce::Rectangle<int> channelAreaR(30, 210, 780, 160);
+    juce::Rectangle<int> channelAreaL(30, 62, 780, 160);
+    juce::Rectangle<int> channelAreaR(30, 242, 780, 160);
 
     // Destroy Bounds
-    juce::Rectangle<int> destroySectionArea(830, 30, 140, 340);
+    juce::Rectangle<int> destroySectionArea(830, 62, 140, 340);
     
     const int xOffset = destroySectionArea.getX();
     const int yOffset = destroySectionArea.getY();
