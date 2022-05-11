@@ -97,6 +97,8 @@ On the video below we can see the non-linear response function associated with t
 
  https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-b284-d9a3775c0927.mp4
 
+
+
 <br>
 On the video below we can see the non-linear response function associated with the Destructive distortion of the plugin.
 
@@ -109,7 +111,7 @@ On the video below we can see the non-linear response function associated with t
 ## Distorted Signals
 
 <br>
-Here you can appreciate how a sinusoidal input is affected by the normal destroy function while the gain goes from minimum to maximum value.
+Here you can appreciate how a sinusoidal input is affected by the normal distortion function while the gain goes from minimum to maximum value.
 
 https://user-images.githubusercontent.com/62107154/167875579-683dd9cf-f5f1-4443-9715-3be7659e71a0.mp4
 
