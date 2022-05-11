@@ -103,6 +103,14 @@ On the video below we can see the non-linear response function associated with t
 
 
 
+
+https://user-images.githubusercontent.com/62107154/167874255-aba8f44e-7efc-4ab2-a9c2-137ea3abfbd9.mp4
+
+
+
+https://user-images.githubusercontent.com/62107154/167874207-d85891de-1368-42aa-81f1-c99be56112f4.mp4
+
+
 ## Folder Structure
 
 The project repository contains one Projucer file that contains the main project setup with builds for:
