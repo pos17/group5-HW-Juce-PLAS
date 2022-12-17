@@ -19,8 +19,8 @@ Project developed in [Juce](https://juce.com/) framework for the course of Compu
 Granulands consists of a granular synthesizer that plays four different **Foley** sounds, all the generated through the <em>Granular Synthesis</em> technique. It also allows the user to manipulate their characteristics and to place them around the stereo spectrum.
 A complete description of the development of the system can be found in the [report](https://github.com/polimi-cmls-22/group5-HW-SC-PLAS/blob/main/report1.pdf)
  -->
-<em>Auto Destructive Harmonic Distortion</em> allows the user to process the sound in a complete way. The plugin is composed of two channels that give the possibility to the user of a Left-Right or Mid-side processing. Every channel has both an input filter that allows three types of prefiltering (lowpass, bandpass, highpass), and a filter positioned after distortion. Moreover the plugin offers a true-peak level meter to monitor input-output levels.  
-A complete description of the development of the system can be found in the [report](https://github.com/polimi-cmls-22/group5-HW-SC-PLAS/blob/main/report1.pdf).
+<em>Auto Destructive Harmonic Distortion</em> allows the user to process the sound in a complete way. The plugin is composed of two channels that give the possibility to the user of a Left-Right or Mid-Side processing. Every channel has both an input filter that allows three types of prefiltering (lowpass, bandpass, highpass), and a filter positioned after distortion. Moreover the plugin offers a true-peak level meter to monitor input-output levels.  
+A complete description of the development of the system can be found in the [report](https://github.com/Pox17/group5-HW-Juce-PLAS/blob/main/report2.pdf).
 
 ## Getting Started
 
@@ -111,7 +111,10 @@ On the video below we can see the non-linear response function associated with t
 
 ## Distorted Signals
 
+<<<<<<< HEAD
   https://user-images.githubusercontent.com/62107154/167875579-683dd9cf-f5f1-4443-9715-3be7659e71a0.mp4
+=======
+>>>>>>> 4dfce88df2cac6516e5a0d32f9eae7e922018e32
 <br>
 Here you can appreciate how a sinusoidal input is affected by the normal distortion function while the gain goes from minimum to maximum value.
 
