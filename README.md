@@ -6,7 +6,8 @@
   - [Project Description](#project-description)
   - [Getting Started](#getting-started)
   - [Usage](#usage)
-  - [Distortion curves](#distortion-curves)
+  - [Distortion Curves](#distortion-curves)
+  - [Distorted Signals](#distorted-signals)
   - [Folder Structure](#folder-structure)
   - [Notes](#notes)
   - [Components](#components)
@@ -27,9 +28,9 @@ In order to build the plugin on your own Computer:
 
 
 
-1. Download the git repository
-2. Download the [Juce source code](https://juce.com/get-juce)
-3. Open a new Projucer file. 
+1. Download the [Juce source code](https://juce.com/get-juce)
+2. Clone this repo
+3. Open ADHD.jucer 
 4. Add the <em>juce_dsp</em> module to the module list
 5. Choose the preferred IDE used to build the plugin
 6. Run the juce project in order to open it in the IDE
@@ -89,24 +90,35 @@ In order to build the plugin on your own Computer:
 
 ![](./gitAssets/PLUGINALLDESTROY.PNG)
 
-## Distortion curves
+## Distortion Curves
 
+<br>
 On the video below we can see the non-linear response function associated with the standard distortion of the plugin.
 
 
   https://user-images.githubusercontent.com/62107154/167499653-6f4649ae-b2e4-4467-b284-d9a3775c0927.mp4
 
+
+
+<br>
 On the video below we can see the non-linear response function associated with the Destructive distortion of the plugin.
 
 
   https://user-images.githubusercontent.com/62107154/167714148-b8a70f89-3f9a-43a1-85be-9171ff038bd9.mp4
 
 
+<br>
 
+## Distorted Signals
 
   https://user-images.githubusercontent.com/62107154/167875579-683dd9cf-f5f1-4443-9715-3be7659e71a0.mp4
+<br>
+Here you can appreciate how a sinusoidal input is affected by the normal distortion function while the gain goes from minimum to maximum value.
 
+https://user-images.githubusercontent.com/62107154/167875579-683dd9cf-f5f1-4443-9715-3be7659e71a0.mp4
 
+<br>
+Here you can appreciate how a sinusoidal input is affected by the destroy function while the gain goes from minimum to maximum value.
 
 
 
